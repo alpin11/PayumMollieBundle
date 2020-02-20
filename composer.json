@@ -12,12 +12,14 @@
   "authors": [
     {
       "name": "David Höck",
-      "email": "d.hoeck@alpin11.at"
+      "email": "d.hoeck@alpin11.at",
+      "role": "Developer",
+      "homepage": "https://alpin11.at"
     }
   ],
   "require": {
     "php": "^7.0",
-    "alpin11/payum-mollie": "*",
+    "alpin11/payum-mollie": "~1.0.0",
     "coreshop/payum-bundle": "^2.0"
   },
   "autoload": {
@@ -25,6 +27,8 @@
       "CoreShop\\Payum\\MollieBundle\\": "src/"
     }
   },
+  "prefer-stable": true,
+  "minimum-stability": "dev",
   "extra": {
     "pimcore": {
       "bundles": [
