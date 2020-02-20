@@ -32,7 +32,7 @@ coreshop.provider.gateways.mollie = Class.create(coreshop.provider.gateways.abst
             displayField: 'name',
             valueField: 'key',
             name: 'gatewayConfig.config.method',
-            multiple: true,
+            multiSelect: true,
             value: config.method ? config.method : []
         });
 
