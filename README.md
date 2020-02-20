@@ -1,4 +1,4 @@
-# CoreShop Mpay24 Payum Connector
+# CoreShop Mollie Payum Connector
 This bundle activates the Mollie PaymentGateway in CoreShop.
 It requires the [alpin11/payum-mollie](https://github.com/alpin11/payum-mollie) repository which will be installed automatically.
 
@@ -18,4 +18,4 @@ Enable the Bundle in Pimcore Extension Manager or via the CLI
 ```
 
 #### 3. Setup
-Go to CoreShop -> PaymentProvider and add a new Provider. Choose `mollie` from `type` and fill out the required fields.
+Go to CoreShop -> PaymentProvider and add a new provider. Choose `mollie` from `type` and fill out the required fields.
