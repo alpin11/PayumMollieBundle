@@ -1,0 +1,4 @@
+core_shop_payment:
+    pimcore_admin:
+        js:
+            mpay24: /bundles/mollie/pimcore/js/mollie.js

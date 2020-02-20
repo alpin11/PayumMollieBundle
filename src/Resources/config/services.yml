@@ -1,0 +1,19 @@
+services:
+
+    CoreShop\Payum\MollieBundle\Form\Payment\MollieType:
+        tags:
+            - { name: coreshop.gateway_configuration_type, type: mollie }
+            - { name: form.type }
+
+    payum.mpay24_gateway_factory:
+        class: Payum\Core\Bridge\Symfony\Builder\GatewayFactoryBuilder
+        arguments:
+            - 'Alpin11\Payum\Mollie\MollieGatewayFactory'
+        tags:
+            - { name: payum.gateway_factory_builder, factory: mollie }
+
+    CoreShop\Payum\MollieBundle\Extension\ConvertPaymentExtension:
+        autowire: true
+        tags:
+            - { name: payum.extension, alias: mollie_order_extension, factory: mollie, gateway: mollie, prepend: false }
+

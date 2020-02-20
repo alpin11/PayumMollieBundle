@@ -1,0 +1,35 @@
+{
+  "name": "alpin11/payum-mollie-bundle",
+  "description": "[Payum] CoreShop Mollie Bundle",
+  "type": "pimcore-bundle",
+  "keywords": [
+    "coreshop",
+    "pimcore",
+    "ecommerce",
+    "mollie"
+  ],
+  "license": "GPL-3.0-or-later",
+  "authors": [
+    {
+      "name": "David Höck",
+      "email": "d.hoeck@alpin11.at"
+    }
+  ],
+  "require": {
+    "php": "^7.0",
+    "alpin11/payum-mollie": "*",
+    "coreshop/payum-bundle": "^2.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "CoreShop\\Payum\\MollieBundle\\": "src/"
+    }
+  },
+  "extra": {
+    "pimcore": {
+      "bundles": [
+        "CoreShop\\Payum\\MollieBundle\\MollieBundle"
+      ]
+    }
+  }
+}
