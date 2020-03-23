@@ -1,4 +1,6 @@
 services:
+    _defaults:
+        public: true
 
     CoreShop\Payum\MollieBundle\Form\Payment\MollieType:
         tags:

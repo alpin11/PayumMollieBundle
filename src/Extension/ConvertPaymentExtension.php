@@ -4,7 +4,7 @@
 namespace CoreShop\Payum\MollieBundle\Extension;
 
 
-use ArrayObject;
+use Payum\Core\Bridge\Spl\ArrayObject;
 use CoreShop\Component\Core\Model\OrderInterface;
 use CoreShop\Component\Core\Model\PaymentInterface;
 use CoreShop\Payum\MollieBundle\Model\MollieCustomerInterface;
@@ -46,6 +46,10 @@ final class ConvertPaymentExtension implements ExtensionInterface
 
         $data = [];
 
+        $data['amount'] = [
+            'value' => number_format(($payment->getTotalAmount() / 100), 2),
+            'currency' => $payment->getCurrencyCode()
+        ];
         $data['description'] = sprintf("Payment for order #%s", $order->getOrderNumber());
         $data['locale'] = $order->getLocaleCode();
         $data['metadata'] = json_encode([
@@ -61,7 +65,7 @@ final class ConvertPaymentExtension implements ExtensionInterface
         }
 
         $result = ArrayObject::ensureArrayObject($request->getResult());
-        $result = array_merge($data, $result);
+        $result = is_array($result) ? array_merge($data, $result) : $data;
         $request->setResult((array)$result);
     }
 
