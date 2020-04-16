@@ -57,7 +57,7 @@ final class ConvertPaymentExtension implements ExtensionInterface
         $data = [];
 
         $data['amount'] = [
-            'value' => number_format(($payment->getTotalAmount() / 100), 2),
+            'value' => number_format(($payment->getTotalAmount() / $this->decimalFactor), 2),
             'currency' => $payment->getCurrencyCode()
         ];
         $data['orderNumber'] = $order->getOrderNumber();
@@ -94,6 +94,11 @@ final class ConvertPaymentExtension implements ExtensionInterface
     {
     }
 
+    /**
+     * @param OrderInterface $order
+     *
+     * @return array
+     */
     private function getLines(OrderInterface $order)
     {
         $lines = [];
@@ -106,6 +111,10 @@ final class ConvertPaymentExtension implements ExtensionInterface
             $lineItem['unitPrice'] = $orderItem->getItemPrice(true) / $this->decimalFactor;
             $lineItem['discountAmount'] = $orderItem->getItemDiscount(true) / $this->decimalFactor;
             $lineItem['totalAmount'] = $orderItem->getTotal(true) / $this->decimalFactor;
+
+            $lines[] = $lineItem;
         }
+
+        return $lines;
     }
 }
