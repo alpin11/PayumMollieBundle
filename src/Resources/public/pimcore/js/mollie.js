@@ -22,6 +22,8 @@ coreshop.provider.gateways.mollie = Class.create(coreshop.provider.gateways.abst
                 {"key": "paysafecard", "name": "Paysafe Card"},
                 {"key": "przelewy24", "name": "Przelewy24"},
                 {"key": "sofort", "name": "Sofort"},
+                {"key": "klarnapaylater", "name": "Klarna Pay Later"},
+                {"key": "klarnasliceit", "name": "Klarna Slice It"},
             ]
         });
 

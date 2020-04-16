@@ -16,6 +16,8 @@ services:
 
     CoreShop\Payum\MollieBundle\Extension\ConvertPaymentExtension:
         autowire: true
+        arguments:
+            - '%coreshop.currency.decimal_factor%'
         tags:
             - { name: payum.extension, alias: mollie_order_extension, factory: mollie, gateway: mollie, prepend: false }
 

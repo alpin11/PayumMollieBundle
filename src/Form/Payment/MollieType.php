@@ -36,6 +36,8 @@ final class MollieType extends AbstractType
                     'paysafecard',
                     'przelewy24',
                     'sofort',
+                    'klarnapaylater',
+                    'klarnasliceit'
                 ]
             ]);
     }

@@ -3,7 +3,6 @@
 
 namespace CoreShop\Payum\MollieBundle\Extension;
 
-
 use Payum\Core\Bridge\Spl\ArrayObject;
 use CoreShop\Component\Core\Model\OrderInterface;
 use CoreShop\Component\Core\Model\PaymentInterface;
@@ -14,6 +13,17 @@ use Payum\Core\Request\Convert;
 
 final class ConvertPaymentExtension implements ExtensionInterface
 {
+
+    /**
+     * @var float
+     */
+    private $decimalFactor;
+
+    public function __construct(float $decimalFactor)
+    {
+        $this->decimalFactor = $decimalFactor;
+    }
+
     /**
      * @inheritDoc
      */
@@ -50,6 +60,7 @@ final class ConvertPaymentExtension implements ExtensionInterface
             'value' => number_format(($payment->getTotalAmount() / 100), 2),
             'currency' => $payment->getCurrencyCode()
         ];
+        $data['orderNumber'] = $order->getOrderNumber();
         $data['description'] = sprintf("Payment for order #%s", $order->getOrderNumber());
         $data['locale'] = $order->getLocaleCode();
         $data['metadata'] = json_encode([
@@ -74,7 +85,6 @@ final class ConvertPaymentExtension implements ExtensionInterface
      */
     public function onPreExecute(Context $context)
     {
-
     }
 
     /**
@@ -82,7 +92,20 @@ final class ConvertPaymentExtension implements ExtensionInterface
      */
     public function onExecute(Context $context)
     {
-
     }
 
+    private function getLines(OrderInterface $order)
+    {
+        $lines = [];
+
+        foreach ($order->getItems() as $orderItem) {
+            $lineItem = [];
+
+            $lineItem['name'] = $orderItem->getName();
+            $lineItem['quantity'] = $orderItem->getQuantity();
+            $lineItem['unitPrice'] = $orderItem->getItemPrice(true) / $this->decimalFactor;
+            $lineItem['discountAmount'] = $orderItem->getItemDiscount(true) / $this->decimalFactor;
+            $lineItem['totalAmount'] = $orderItem->getTotal(true) / $this->decimalFactor;
+        }
+    }
 }
