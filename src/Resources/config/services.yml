@@ -14,10 +14,22 @@ services:
         tags:
             - { name: payum.gateway_factory_builder, factory: mollie }
 
-    CoreShop\Payum\MollieBundle\Extension\ConvertPaymentExtension:
+    CoreShop\Payum\MollieBundle\Extension\ConvertOrderExtension:
         autowire: true
         arguments:
             - '%coreshop.currency.decimal_factor%'
         tags:
             - { name: payum.extension, alias: mollie_order_extension, factory: mollie, gateway: mollie, prepend: false }
+
+    CoreShop\Payum\MollieBundle\Extension\ConvertOrderItemsExtension:
+        autowire: true
+        arguments:
+            - '%coreshop.currency.decimal_factor%'
+        tags:
+            - { name: payum.extension, alias: mollie_order_items_extension, factory: mollie, gateway: mollie, prepend: false }
+
+    CoreShop\Payum\MollieBundle\Extension\ConvertOrderAddressesExtension:
+        autowire: true
+        tags:
+            - { name: payum.extension, alias: mollie_order_addresses_extension, factory: mollie, gateway: mollie, prepend: false }
 

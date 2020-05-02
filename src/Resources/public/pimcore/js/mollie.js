@@ -40,12 +40,6 @@ coreshop.provider.gateways.mollie = Class.create(coreshop.provider.gateways.abst
 
         return [
             {
-                xtype: 'checkbox',
-                fieldLabel: t('mollie_test'),
-                name: 'gatewayConfig.config.test',
-                value: config.test ? config.test : true
-            },
-            {
                 xtype: 'textfield',
                 fieldLabel: t('mollie_api_key'),
                 name: 'gatewayConfig.config.apiKey',

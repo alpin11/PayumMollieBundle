@@ -14,7 +14,6 @@ final class MollieType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('test', CheckboxType::class)
             ->add('apiKey', TextType::class)
             ->add('method', ChoiceType::class, [
                 'multiple' => true,
