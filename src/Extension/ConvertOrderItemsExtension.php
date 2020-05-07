@@ -3,6 +3,7 @@
 
 namespace CoreShop\Payum\MollieBundle\Extension;
 
+use CoreShop\Component\Order\Model\AdjustmentInterface;
 use CoreShop\Component\Order\Model\CartPriceRuleInterface;
 use CoreShop\Component\Order\Model\OrderInterface;
 use CoreShop\Component\Order\Model\OrderItemInterface;
@@ -55,9 +56,47 @@ class ConvertOrderItemsExtension extends AbstractConvertOrderExtension
             $lineItems = array_merge($lineItems, $shippingItems);
         }
 
+        foreach ($order->getAdjustments() as $adjustment) {
+            if ($adjustment->getNeutral() == true) {
+                continue;
+            }
+
+            if (in_array($adjustment->getTypeIdentifier(), [AdjustmentInterface::SHIPPING, AdjustmentInterface::CART_PRICE_RULE])) {
+                continue;
+            }
+
+            $lineItems[] = $this->transformAdjustmentToLineItem($adjustment, $payment->getCurrencyCode());
+        }
+
         $result['lines'] = $lineItems;
 
         return $result;
+    }
+
+
+    /**
+     * @param AdjustmentInterface $adjustment
+     * @param $currencyCode
+     *
+     * @return array
+     */
+    protected function transformAdjustmentToLineItem(AdjustmentInterface $adjustment, $currencyCode)
+    {
+        $amountGross = $adjustment->getAmount(true);
+        $amountNet = $adjustment->getAmount(false);
+
+        $vatAmount = $amountGross - $amountNet;
+        $vatRate = round(($vatAmount / $amountNet) * 100);
+
+        return [
+            'type' => OrderLineType::TYPE_SURCHARGE,
+            'name' => $adjustment->getTypeIdentifier(),
+            'quantity' => 1,
+            'unitPrice' => $this->transformMoneyWithCurrency($amountGross, $currencyCode),
+            'totalAmount' => $this->transformMoneyWithCurrency($amountGross, $currencyCode),
+            'vatAmount' => $this->transformMoneyWithCurrency($vatAmount, $currencyCode),
+            'vatRate' => sprintf("%01.2f", $vatRate)
+        ];
     }
 
     /**
