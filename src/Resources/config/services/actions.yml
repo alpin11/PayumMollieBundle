@@ -1,0 +1,31 @@
+services:
+    _defaults:
+        public: true
+
+    coreshop.payum.mollie.action.capture: '@CoreShop\Payum\MollieBundle\Action\CaptureAction'
+    CoreShop\Payum\MollieBundle\Action\CaptureAction:
+        tags:
+            - { name: payum.action, factory: mollie, alias: payum.action.capture }
+
+    coreshop.payum.mollie.action.cancel: '@CoreShop\Payum\MollieBundle\Action\CancelAction'
+    CoreShop\Payum\MollieBundle\Action\CancelAction:
+        tags:
+            - { name: payum.action, factory: mollie, alias: payum.action.cancel }
+
+    coreshop.payum.mollie.action.convert_payment: '@CoreShop\Payum\MollieBundle\Action\ConvertPaymentAction'
+    CoreShop\Payum\MollieBundle\Action\ConvertPaymentAction:
+        arguments:
+            - '%coreshop.currency.decimal_factor%'
+        tags:
+            - { name: payum.action, factory: mollie, alias: payum.action.convert_payment }
+
+    coreshop.payum.mollie.action.notify: '@CoreShop\Payum\MollieBundle\Action\NotifyAction'
+    CoreShop\Payum\MollieBundle\Action\NotifyAction:
+        tags:
+            - { name: payum.action, factory: mollie, alias: payum.action.notify }
+
+    coreshop.payum.mollie.action.status: '@CoreShop\Payum\MollieBundle\Action\StatusAction'
+    CoreShop\Payum\MollieBundle\Action\StatusAction:
+        tags:
+            - { name: payum.action, factory: mollie, alias: payum.action.status }
+

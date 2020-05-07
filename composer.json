@@ -19,8 +19,9 @@
   ],
   "require": {
     "php": "^7.0",
-    "alpin11/payum-mollie": "~1.0.0",
-    "coreshop/payum-bundle": "^2.0"
+    "coreshop/payum-bundle": "^2.0",
+    "payum/core": "^1.5",
+    "mollie/mollie-api-php": "^2.16"
   },
   "autoload": {
     "psr-4": {

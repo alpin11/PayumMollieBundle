@@ -17,18 +17,18 @@ use Pimcore\Model\Asset;
 use Pimcore\Model\DataObject\Fieldcollection;
 use Pimcore\Tool;
 
-final class ConvertOrderItemsExtension extends AbstractConvertOrderExtension
+class ConvertOrderItemsExtension extends AbstractConvertOrderExtension
 {
     /**
-     * @var int
+     * @var int|float
      */
-    private $decimalFactor;
+    protected $decimalFactor;
     /**
      * @var LinkGeneratorHelperInterface
      */
-    private $linkGeneratorHelper;
+    protected $linkGeneratorHelper;
 
-    public function __construct(LinkGeneratorHelperInterface $linkGeneratorHelper, int $decimalFactor)
+    public function __construct(LinkGeneratorHelperInterface $linkGeneratorHelper, $decimalFactor)
     {
         $this->decimalFactor = $decimalFactor;
         $this->linkGeneratorHelper = $linkGeneratorHelper;
@@ -49,11 +49,17 @@ final class ConvertOrderItemsExtension extends AbstractConvertOrderExtension
             $lineItems[] = $this->transformPriceRuleItemToLineItem($priceRuleItem, $payment->getCurrencyCode(), $order->getLocaleCode());
         }
 
+        if ($order->getShipping() > 0) {
+
+            $shippingItems = $this->transformShippingToLineItem($order, $payment->getCurrencyCode());
+
+            $lineItems = array_merge($shippingItems, $shippingItems);
+        }
+
         $result['lines'] = $lineItems;
 
         return $result;
     }
-
 
     /**
      * @param ProposalCartPriceRuleItemInterface $priceRuleItem
@@ -62,12 +68,13 @@ final class ConvertOrderItemsExtension extends AbstractConvertOrderExtension
      *
      * @return array
      */
-    private function transformPriceRuleItemToLineItem(ProposalCartPriceRuleItemInterface $priceRuleItem, $currencyCode, $localeCode)
+    protected function transformPriceRuleItemToLineItem(ProposalCartPriceRuleItemInterface $priceRuleItem, $currencyCode, $localeCode)
     {
         $discountGross = $priceRuleItem->getDiscount(true);
         $discountNet = $priceRuleItem->getDiscount(false);
+
         $vatAmount = $discountGross - $discountNet;
-        $vatRate = (int)round($vatAmount / $discountNet) * 100;
+        $vatRate = round(($vatAmount / $discountNet) * 100);
 
         return [
             'type' => OrderLineType::TYPE_DISCOUNT,
@@ -76,11 +83,38 @@ final class ConvertOrderItemsExtension extends AbstractConvertOrderExtension
             'unitPrice' => $this->transformMoneyWithCurrency($discountGross, $currencyCode),
             'totalAmount' => $this->transformMoneyWithCurrency($discountGross, $currencyCode),
             'vatAmount' => $this->transformMoneyWithCurrency($vatAmount, $currencyCode),
-            'vatRate' => number_format($vatRate, 2, '.'),
+            'vatRate' => sprintf("%01.2f", $vatRate),
             'metadata' => json_encode([
                 'voucherCode' => $priceRuleItem->getVoucherCode(),
                 'cartPriceRulePimcoreId' => $priceRuleItem->getCartPriceRule() instanceof CartPriceRuleInterface ? $priceRuleItem->getCartPriceRule()->getId() : null
             ])
+        ];
+    }
+
+
+    /**
+     * @param OrderInterface $order
+     * @param $currencyCode
+     * @param $localeCode
+     *
+     * @return array
+     */
+    protected function transformShippingToLineItem(OrderInterface $order, $currencyCode)
+    {
+        $shippingGross = $order->getShipping(true);
+        $vatAmount = round($order->getShippingTax() / $this->decimalFactor);
+        $vatRate = $order->getShippingTaxRate();
+
+        return [
+            [
+                'type' => OrderLineType::TYPE_SHIPPING_FEE,
+                'name' => 'shipping costs',
+                'quantity' => 1,
+                'unitPrice' => $this->transformMoneyWithCurrency($shippingGross, $currencyCode),
+                'totalAmount' => $this->transformMoneyWithCurrency($shippingGross, $currencyCode),
+                'vatAmount' => $this->transformMoneyWithCurrency($vatAmount, $currencyCode),
+                'vatRate' => sprintf("%01.2f", $vatRate),
+            ]
         ];
     }
 
@@ -91,14 +125,14 @@ final class ConvertOrderItemsExtension extends AbstractConvertOrderExtension
      *
      * @return array
      */
-    private function transformOrderItemToLineItem(OrderItemInterface $orderItem, $currencyCode, $locale = null)
+    protected function transformOrderItemToLineItem(OrderItemInterface $orderItem, $currencyCode, $locale = null)
     {
         $product = $orderItem->getProduct();
-        $itemPriceGross = $orderItem->getItemPrice(true);
-        $itemDiscountGross = $orderItem->getItemDiscount(true);
+        $itemPriceGross = $orderItem->getItemRetailPrice(true);
+        $itemDiscountGross = $orderItem->getItemDiscount(true) * $orderItem->getQuantity();
         $itemTotal = $orderItem->getTotal(true);
-        $taxRate = $this->getTaxRateFromOrderItem($orderItem);
         $taxAmount = $orderItem->getTotalTax();
+        $taxRate = round(($taxAmount / $orderItem->getTotal(false)) * 100);
 
 
         $lineItem = [
@@ -108,7 +142,7 @@ final class ConvertOrderItemsExtension extends AbstractConvertOrderExtension
             'unitPrice' => $this->transformMoneyWithCurrency($itemPriceGross, $currencyCode),
             'discountAmount' => $this->transformMoneyWithCurrency($itemDiscountGross, $currencyCode),
             'totalAmount' => $this->transformMoneyWithCurrency($itemTotal, $currencyCode),
-            'vatRate' => number_format($taxRate, 2, '.'),
+            'vatRate' => sprintf("%01.2f", $taxRate),
             'vatAmount' => $this->transformMoneyWithCurrency($taxAmount, $currencyCode),
         ];
 
@@ -123,7 +157,9 @@ final class ConvertOrderItemsExtension extends AbstractConvertOrderExtension
                 $lineItem['imageUrl'] = Tool::getHostUrl() . $product->getImage()->getFullPath();
             }
 
-            $lineItem['productUrl'] = $this->linkGeneratorHelper->getUrl($product);
+            $lineItem['productUrl'] = Tool::getHostUrl() . $this->linkGeneratorHelper->getPath($product, null, [
+                    '_locale' => $locale
+                ]);
         }
 
         $lineItem['metadata'] = json_encode([
@@ -133,26 +169,6 @@ final class ConvertOrderItemsExtension extends AbstractConvertOrderExtension
         return $lineItem;
     }
 
-    /**
-     * @param OrderItemInterface $orderItem
-     *
-     * @return int
-     */
-    private function getTaxRateFromOrderItem(OrderItemInterface $orderItem)
-    {
-        $taxes = $orderItem->getTaxes();
-
-        if ($taxes instanceof Fieldcollection) {
-            if ($taxes->getCount() > 0) {
-                /** @var TaxItemInterface $firstTaxItem */
-                $firstTaxItem = $taxes->getItems()[0];
-
-                return (int)$firstTaxItem->getRate();
-            }
-        }
-
-        return 0;
-    }
 
     /**
      * @param int $amount
@@ -160,10 +176,10 @@ final class ConvertOrderItemsExtension extends AbstractConvertOrderExtension
      *
      * @return string[]
      */
-    private function transformMoneyWithCurrency(int $amount, string $currencyCode)
+    protected function transformMoneyWithCurrency(int $amount, string $currencyCode)
     {
         return [
-            'amount' => (string)number_format(($amount / $this->decimalFactor), 2, '.'),
+            'value' => sprintf("%01.2f", ($amount / $this->decimalFactor)),
             'currency' => $currencyCode
         ];
     }

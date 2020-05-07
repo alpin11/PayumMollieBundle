@@ -1,0 +1,10 @@
+services:
+    _defaults:
+        public: true
+
+    CoreShop\Payum\MollieBundle\Factory\RefundOrderFactoryInterface: '@CoreShop\Payum\MollieBundle\Factory\RefundOrderFactory'
+    CoreShop\Payum\MollieBundle\Factory\RefundOrderFactory:
+
+    CoreShop\Payum\MollieBundle\Factory\RefundOrderLinesFactoryInterface: '@CoreShop\Payum\MollieBundle\Factory\RefundOrderLinesFactory'
+    CoreShop\Payum\MollieBundle\Factory\RefundOrderLinesFactory:
+

@@ -4,19 +4,19 @@
 namespace CoreShop\Payum\MollieBundle\Extension;
 
 use Carbon\Carbon;
-use CoreShop\Component\Core\Model\OrderInterface;
-use CoreShop\Component\Core\Model\PaymentInterface;
+use CoreShop\Component\Order\Model\OrderInterface;
+use CoreShop\Component\Payment\Model\PaymentInterface;
 use CoreShop\Component\Core\Model\ProductInterface;
 use CoreShop\Payum\MollieBundle\Model\MollieCustomerInterface;
 
-final class ConvertOrderExtension extends AbstractConvertOrderExtension
+class ConvertOrderExtension extends AbstractConvertOrderExtension
 {
     /**
-     * @var int
+     * @var int|float
      */
     private $decimalFactor;
 
-    public function __construct(int $decimalFactor)
+    public function __construct($decimalFactor)
     {
         $this->decimalFactor = $decimalFactor;
     }
@@ -28,8 +28,6 @@ final class ConvertOrderExtension extends AbstractConvertOrderExtension
     {
         $customer = $order->getCustomer();
 
-        $result['amount'] = $this->transformMoneyWithCurrency($payment->getTotalAmount(), $payment->getCurrencyCode());
-        $result['description'] = $payment->getDescription();
         $result['orderNumber'] = $order->getOrderNumber();
         $result['locale'] = $order->getLocaleCode();
 
@@ -54,19 +52,5 @@ final class ConvertOrderExtension extends AbstractConvertOrderExtension
 
 
         return $result;
-    }
-
-    /**
-     * @param int $amount
-     * @param string $currencyCode
-     *
-     * @return string[]
-     */
-    private function transformMoneyWithCurrency(int $amount, string $currencyCode)
-    {
-        return [
-            'amount' => (string)number_format(($amount / $this->decimalFactor), 2, '.'),
-            'currency' => $currencyCode
-        ];
     }
 }

@@ -54,7 +54,7 @@ final class ConvertOrderAddressesExtension extends AbstractConvertOrderExtension
             'postalCode' => $address->getPostcode(),
             'city' => $address->getCity(),
             'region' => $address->getState() instanceof StateInterface ? $address->getState()->getName($locale) : null,
-            'country' => $address->getCountry() instanceof CountryInterface ? $address->getCountry()->getName($locale) : null,
+            'country' => $address->getCountry() instanceof CountryInterface ? $address->getCountry()->getIsoCode() : null,
         ];
     }
 }
