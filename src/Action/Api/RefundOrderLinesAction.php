@@ -3,7 +3,6 @@
 
 namespace CoreShop\Payum\MollieBundle\Action\Api;
 
-
 use CoreShop\Payum\MollieBundle\MollieDetails;
 use CoreShop\Payum\MollieBundle\Request\Api\RefundOrderLines;
 use Mollie\Api\Exceptions\ApiException;

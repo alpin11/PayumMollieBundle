@@ -3,7 +3,6 @@
 
 namespace CoreShop\Payum\MollieBundle\Action\Api;
 
-
 use Mollie\Api\Exceptions\ApiException;
 use Mollie\Api\MollieApiClient;
 use Mollie\Api\Types\OrderStatus;

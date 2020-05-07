@@ -3,7 +3,6 @@
 
 namespace CoreShop\Payum\MollieBundle\EventListener;
 
-
 use CoreShop\Bundle\PayumBundle\Factory\GetStatusFactoryInterface;
 use CoreShop\Bundle\PayumBundle\Model\PaymentSecurityToken;
 use CoreShop\Component\Payment\Model\PaymentInterface;
@@ -38,8 +37,7 @@ class PaymentWorkflowListener implements EventSubscriberInterface
         StorageInterface $tokenStorage,
         RefundArbitraryAmountFactoryInterface $refundArbitraryAmountFactory,
         GetStatusFactoryInterface $getStatusRequestFactory
-    )
-    {
+    ) {
         $this->refundArbitraryAmountFactory = $refundArbitraryAmountFactory;
         $this->getStatusRequestFactory = $getStatusRequestFactory;
         $this->payum = $payum;
@@ -49,8 +47,7 @@ class PaymentWorkflowListener implements EventSubscriberInterface
     /**
      * @inheritDoc
      */
-    public
-    static function getSubscribedEvents()
+    public static function getSubscribedEvents()
     {
         return [
             'workflow.coreshop_payment.enter.refund' => 'onRefund'

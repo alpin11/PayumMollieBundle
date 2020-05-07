@@ -3,7 +3,6 @@
 
 namespace CoreShop\Payum\MollieBundle;
 
-
 class MollieDetails
 {
     const ORDER_ID = "MOLLIE_ORDER_ID";

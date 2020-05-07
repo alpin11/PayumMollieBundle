@@ -3,7 +3,6 @@
 
 namespace CoreShop\Payum\MollieBundle\Request\Api;
 
-
 use Payum\Core\Request\Generic;
 
 class RefundOrderLines extends Generic

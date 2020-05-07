@@ -51,7 +51,6 @@ class StatusAction extends BaseApiAwareAction
             }
 
             $details[MollieDetails::LINES] = $lineItems;
-
         }
 
         $status = $details[MollieDetails::STATUS];

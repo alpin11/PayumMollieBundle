@@ -50,7 +50,6 @@ class ConvertOrderItemsExtension extends AbstractConvertOrderExtension
         }
 
         if ($order->getShipping() > 0) {
-
             $shippingItems = $this->transformShippingToLineItem($order, $payment->getCurrencyCode());
 
             $lineItems = array_merge($shippingItems, $shippingItems);
