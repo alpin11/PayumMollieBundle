@@ -37,20 +37,7 @@ class StatusAction extends BaseApiAwareAction
             $details[MollieDetails::IS_CANCELABLE] = $mollieOrder->isCancelable;
             $details[MollieDetails::PROFILE_ID] = $mollieOrder->profileId;
             $details[MollieDetails::MODE] = $mollieOrder->mode;
-
-            $lineItems = [];
-
-            /**
-             * @var $line OrderLine
-             */
-            foreach ($mollieOrder->lines as $line) {
-                $lineItems[] = [
-                    MollieDetails::LINE_ITEM_ID => $line->id,
-                    MollieDetails::QUANTITY => $line->quantity
-                ];
-            }
-
-            $details[MollieDetails::LINES] = $lineItems;
+            $details[MollieDetails::LINES] = $mollieOrder->lines;
         }
 
         $status = $details[MollieDetails::STATUS];

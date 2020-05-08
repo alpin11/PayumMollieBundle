@@ -3,6 +3,7 @@
 namespace CoreShop\Payum\MollieBundle\Action;
 
 use CoreShop\Payum\MollieBundle\Action\Api\BaseApiAwareAction;
+use CoreShop\Payum\MollieBundle\MollieDetails;
 use Mollie\Api\Exceptions\ApiException;
 use Mollie\Api\MollieApiClient;
 use Payum\Core\Bridge\Spl\ArrayObject;
@@ -46,6 +47,12 @@ class CaptureAction extends BaseApiAwareAction implements GenericTokenFactoryAwa
         $details['method'] = count($method) == 1 ? $method[0] : $method;
 
         $mollieOrder = $mollie->orders->create((array)$details);
+
+        $details->replace([
+            MollieDetails::ORDER_ID => $mollieOrder->id,
+            MollieDetails::STATUS => $mollieOrder->status,
+            MollieDetails::MODE => $mollieOrder->mode
+        ]);
 
         $redirect = $mollieOrder->getCheckoutUrl();
 
