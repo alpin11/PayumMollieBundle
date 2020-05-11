@@ -30,7 +30,7 @@ class StatusAction extends BaseApiAwareAction
         $mollie = $this->api->getMollieApi();
 
         if ($details[MollieDetails::ORDER_ID]) {
-            $mollieOrder = $mollie->orders->get($mollie);
+            $mollieOrder = $mollie->orders->get($details[MollieDetails::ORDER_ID]);
 
             $status = $mollieOrder->status;
             $details[MollieDetails::STATUS] = $status;

@@ -28,6 +28,9 @@ class CaptureAction extends BaseApiAwareAction implements GenericTokenFactoryAwa
 
         $details = ArrayObject::ensureArrayObject($request->getModel());
 
+        $httpRequest = new GetHttpRequest();
+        $this->gateway->execute($httpRequest);
+
         /** @var MollieApiClient $mollie */
         $mollie = $this->api->getMollieApi();
         $method = $this->api->getMethod();
