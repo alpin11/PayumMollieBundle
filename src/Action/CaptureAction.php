@@ -10,6 +10,7 @@ use Payum\Core\Bridge\Spl\ArrayObject;
 use Payum\Core\Exception\RequestNotSupportedException;
 use Payum\Core\Reply\HttpRedirect;
 use Payum\Core\Request\Capture;
+use Payum\Core\Request\GetHttpRequest;
 use Payum\Core\Security\GenericTokenFactoryAwareInterface;
 use Payum\Core\Security\GenericTokenFactoryAwareTrait;
 
@@ -27,9 +28,6 @@ class CaptureAction extends BaseApiAwareAction implements GenericTokenFactoryAwa
         RequestNotSupportedException::assertSupports($this, $request);
 
         $details = ArrayObject::ensureArrayObject($request->getModel());
-
-        $httpRequest = new GetHttpRequest();
-        $this->gateway->execute($httpRequest);
 
         /** @var MollieApiClient $mollie */
         $mollie = $this->api->getMollieApi();
