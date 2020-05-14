@@ -16,5 +16,7 @@ services:
             - { name: payum.extension, alias: mollie_order_items_extension, factory: mollie, gateway: mollie, prepend: false }
 
     CoreShop\Payum\MollieBundle\Extension\ConvertOrderAddressesExtension:
+        arguments:
+            - '@libphonenumber.phone_number_util'
         tags:
             - { name: payum.extension, alias: mollie_order_addresses_extension, factory: mollie, gateway: mollie, prepend: false }
