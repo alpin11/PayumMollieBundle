@@ -166,8 +166,7 @@ class ConvertOrderItemsExtension extends AbstractConvertOrderExtension
     protected function transformOrderItemToLineItem(OrderItemInterface $orderItem, $currencyCode, $locale = null)
     {
         $product = $orderItem->getProduct();
-        $itemPriceGross = $orderItem->getItemRetailPrice(true);
-        $itemDiscountGross = $orderItem->getItemDiscount(true) * $orderItem->getQuantity();
+        $itemPriceGross = $orderItem->getItemPrice(true);
         $itemTotal = $orderItem->getTotal(true);
         $taxAmount = $orderItem->getTotalTax();
         $taxRate = round(($taxAmount / $orderItem->getTotal(false)) * 100);
@@ -178,7 +177,6 @@ class ConvertOrderItemsExtension extends AbstractConvertOrderExtension
             'type' => OrderLineType::TYPE_PHYSICAL,
             'quantity' => $orderItem->getQuantity(),
             'unitPrice' => $this->transformMoneyWithCurrency($itemPriceGross, $currencyCode),
-            'discountAmount' => $this->transformMoneyWithCurrency($itemDiscountGross, $currencyCode),
             'totalAmount' => $this->transformMoneyWithCurrency($itemTotal, $currencyCode),
             'vatRate' => sprintf("%01.2f", $taxRate),
             'vatAmount' => $this->transformMoneyWithCurrency($taxAmount, $currencyCode),
