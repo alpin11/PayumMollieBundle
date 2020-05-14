@@ -9,9 +9,24 @@ use CoreShop\Component\Address\Model\CountryInterface;
 use CoreShop\Component\Customer\Model\CustomerInterface;
 use CoreShop\Component\Order\Model\OrderInterface;
 use CoreShop\Component\Payment\Model\PaymentInterface;
+use libphonenumber\NumberParseException;
+use libphonenumber\PhoneNumber;
+use libphonenumber\PhoneNumberFormat;
+use libphonenumber\PhoneNumberUtil;
+use function GuzzleHttp\Promise\inspect;
 
 final class ConvertOrderAddressesExtension extends AbstractConvertOrderExtension
 {
+    /**
+     * @var PhoneNumberUtil
+     */
+    private $phoneNumberUtil;
+
+    public function __construct(PhoneNumberUtil $phoneNumberUtil)
+    {
+        $this->phoneNumberUtil = $phoneNumberUtil;
+    }
+
     /**
      * @inheritDoc
      */
@@ -43,13 +58,22 @@ final class ConvertOrderAddressesExtension extends AbstractConvertOrderExtension
      */
     private function transformAddress(CustomerInterface $customer, AddressInterface $address, $locale = null)
     {
+        $phoneNumber = null;
+
+        try {
+            $phoneNumber = $this->phoneNumberUtil->parse($address->getPhoneNumber());
+            $isValidPhoneNumber = $this->phoneNumberUtil->isValidNumber($phoneNumber);
+        } catch (NumberParseException $e) {
+            $isValidPhoneNumber = false;
+        }
+
         return [
             'organizationName' => $address->getCompany(),
             'title' => $address->getSalutation(),
             'givenName' => $address->getFirstname(),
             'familyName' => $address->getLastname(),
             'email' => $customer->getEmail(),
-            'phone' => $address->getPhoneNumber(),
+            'phone' => $isValidPhoneNumber ? $this->phoneNumberUtil->format($phoneNumber, PhoneNumberFormat::E164) : null,
             'streetAndNumber' => $address->getStreet() . ' ' . $address->getNumber(),
             'postalCode' => $address->getPostcode(),
             'city' => $address->getCity(),
