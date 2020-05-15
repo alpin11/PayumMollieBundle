@@ -2,9 +2,11 @@ services:
     _defaults:
         public: true
 
+    coreshop.payum.mollie.factory.refund_order: '@CoreShop\Payum\MollieBundle\Factory\RefundOrderFactory'
     CoreShop\Payum\MollieBundle\Factory\RefundOrderFactoryInterface: '@CoreShop\Payum\MollieBundle\Factory\RefundOrderFactory'
     CoreShop\Payum\MollieBundle\Factory\RefundOrderFactory:
 
+    coreshop.payum.mollie.factory.refund_order_lines: '@CoreShop\Payum\MollieBundle\Factory\RefundOrderLinesFactory'
     CoreShop\Payum\MollieBundle\Factory\RefundOrderLinesFactoryInterface: '@CoreShop\Payum\MollieBundle\Factory\RefundOrderLinesFactory'
     CoreShop\Payum\MollieBundle\Factory\RefundOrderLinesFactory:
 

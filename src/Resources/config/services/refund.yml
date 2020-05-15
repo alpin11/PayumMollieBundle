@@ -1,2 +1,11 @@
 services:
 
+    CoreShop\Payum\MollieBundle\EventListener\CreditMemoListener:
+        arguments:
+            - '@coreshop.payum.mollie.factory.refund_order_lines'
+            - '@coreshop.repository.payment'
+            - '@payum'
+            - '@payum.security.token_storage'
+            - '@coreshop.factory.payum_get_status'
+        tags:
+            - { name: kernel.event_subscriber }
