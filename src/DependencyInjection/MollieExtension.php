@@ -17,5 +17,9 @@ class MollieExtension extends Extension
     {
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('services.yml');
+
+        if (array_key_exists('CoreShopRefundBundle', $container->getParameter('kernel.bundles'))) {
+            $loader->load('services/refund.yml');
+        }
     }
 }

@@ -12,7 +12,6 @@ use Payum\Core\Request\Cancel;
 
 class RefundOrderAction extends BaseApiAwareAction
 {
-
     /**
      * @inheritDoc
      */
