@@ -88,6 +88,9 @@ class ConvertOrderItemsExtension extends AbstractConvertOrderExtension
         $vatAmount = $amountGross - $amountNet;
         $vatRate = round(($vatAmount / $amountNet) * 100);
 
+        // TODO: needed to prevent rounding errors of mollie
+        $vatAmount = round($amountGross * ($vatRate / (100 + $vatRate)));
+
         return [
             'type' => OrderLineType::TYPE_SURCHARGE,
             'name' => $adjustment->getTypeIdentifier(),
