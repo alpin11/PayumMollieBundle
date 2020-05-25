@@ -10,3 +10,7 @@ services:
     CoreShop\Payum\MollieBundle\Factory\RefundOrderLinesFactoryInterface: '@CoreShop\Payum\MollieBundle\Factory\RefundOrderLinesFactory'
     CoreShop\Payum\MollieBundle\Factory\RefundOrderLinesFactory:
 
+    coreshop.payum.mollie.factory.create_shipment: '@CoreShop\Payum\MollieBundle\Factory\CreateShipmentFactory'
+    CoreShop\Payum\MollieBundle\Factory\CreateShipmentFactoryInterface: '@CoreShop\Payum\MollieBundle\Factory\CreateShipmentFactory'
+    CoreShop\Payum\MollieBundle\Factory\CreateShipmentFactory:
+

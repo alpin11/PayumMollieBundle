@@ -86,6 +86,7 @@ class CreditMemoListener implements EventSubscriberInterface
         $payment = $this->getFirstValidPayment($order);
 
         if (!$payment instanceof PaymentInterface) {
+            Logger::log('found not payment');
             return;
         }
 
@@ -121,9 +122,7 @@ class CreditMemoListener implements EventSubscriberInterface
      */
     private function getFirstValidPayment(OrderInterface $order)
     {
-        $payments = $this->paymentRepository->findForPayable($order);
-
-        foreach ($payments as $payment) {
+        foreach ($this->paymentRepository->findForPayable($order) as $payment) {
             if (in_array($payment->getState(), [PaymentInterface::STATE_AUTHORIZED, PaymentInterface::STATE_COMPLETED], true)) {
                 return $payment;
             }

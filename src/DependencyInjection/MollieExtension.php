@@ -21,5 +21,9 @@ class MollieExtension extends Extension
         if (array_key_exists('CoreShopRefundBundle', $container->getParameter('kernel.bundles'))) {
             $loader->load('services/refund.yml');
         }
+
+        if (array_key_exists('CoreShopOrderBundle', $container->getParameter('kernel.bundles'))) {
+            $loader->load('services/order.yml');
+        }
     }
 }

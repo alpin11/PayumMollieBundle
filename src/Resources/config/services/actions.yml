@@ -29,3 +29,17 @@ services:
         tags:
             - { name: payum.action, factory: mollie, alias: payum.action.status }
 
+    coreshop.payum.mollie.action.api.refund_order: '@CoreShop\Payum\MollieBundle\Action\Api\RefundOrderAction'
+    CoreShop\Payum\MollieBundle\Action\Api\RefundOrderAction:
+        tags:
+            - { name: payum.action, factory: mollie, alias: payum.action.api.refund_order }
+
+    coreshop.payum.mollie.action.api.refund_order_lines: '@CoreShop\Payum\MollieBundle\Action\Api\RefundOrderLinesAction'
+    CoreShop\Payum\MollieBundle\Action\Api\RefundOrderLinesAction:
+        tags:
+            - { name: payum.action, factory: mollie, alias: payum.action.api.refund_order_lines }
+
+    coreshop.payum.mollie.action.api.create_shipment: '@CoreShop\Payum\MollieBundle\Action\Api\CreateShipmentAction'
+    CoreShop\Payum\MollieBundle\Action\Api\CreateShipmentAction:
+        tags:
+            - { name: payum.action, factory: mollie, alias: payum.action.api.create_shipment }
