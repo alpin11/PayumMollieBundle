@@ -6,7 +6,6 @@ services:
         arguments:
             - '@coreshop.repository.payment'
             - '@coreshop.payum.mollie.factory.create_shipment'
-            - '@payum.security.token_storage'
             - '@payum'
             - '@coreshop.factory.payum_get_status'
         tags:
