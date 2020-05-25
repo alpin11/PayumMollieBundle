@@ -3,7 +3,7 @@
 
 namespace CoreShop\Payum\MollieBundle\Factory;
 
-use Alpin11\Payum\Mollie\Request\Api\RefundOrderLines;
+use CoreShop\Payum\MollieBundle\Request\Api\RefundOrderLines;
 
 class RefundOrderLinesFactory implements RefundOrderLinesFactoryInterface
 {

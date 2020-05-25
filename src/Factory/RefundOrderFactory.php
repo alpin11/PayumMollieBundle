@@ -3,7 +3,8 @@
 
 namespace CoreShop\Payum\MollieBundle\Factory;
 
-use Alpin11\Payum\Mollie\Request\Api\RefundOrder;
+
+use CoreShop\Payum\MollieBundle\Request\Api\RefundOrder;
 
 class RefundOrderFactory implements RefundOrderFactoryInterface
 {
