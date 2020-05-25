@@ -8,6 +8,7 @@ use CoreShop\Component\Core\Model\CarrierInterface;
 use CoreShop\Component\Core\Model\OrderInterface;
 use CoreShop\Component\Core\Model\OrderItemInterface;
 use CoreShop\Component\Core\Model\OrderShipmentInterface;
+use CoreShop\Component\Core\Model\PaymentProviderInterface;
 use CoreShop\Component\Order\Model\OrderPaymentInterface;
 use CoreShop\Component\Payment\Model\PaymentInterface;
 use CoreShop\Component\Payment\Repository\PaymentRepositoryInterface;
@@ -30,10 +31,6 @@ class OrderShipmentEventListener
      */
     private $createShipmentFactory;
     /**
-     * @var StorageInterface
-     */
-    private $tokenStorage;
-    /**
      * @var RegistryInterface
      */
     private $payum;
@@ -45,13 +42,12 @@ class OrderShipmentEventListener
     public function __construct(
         PaymentRepositoryInterface $paymentRepository,
         CreateShipmentFactoryInterface $createShipmentFactory,
-        StorageInterface $tokenStorage,
         RegistryInterface $payum,
         GetStatusFactoryInterface $getStatusFactory
-    ) {
+    )
+    {
         $this->paymentRepository = $paymentRepository;
         $this->createShipmentFactory = $createShipmentFactory;
-        $this->tokenStorage = $tokenStorage;
         $this->payum = $payum;
         $this->getStatusFactory = $getStatusFactory;
     }
@@ -110,21 +106,20 @@ class OrderShipmentEventListener
             return;
         }
 
-        $paymentToken = $this->tokenStorage->find($payment);
+        /** @var PaymentProviderInterface $paymentProvider */
+        $paymentProvider = $payment->getPaymentProvider();
 
-        if (!$paymentToken instanceof TokenInterface) {
-            Logger::err('could not find token for payment.', [
-                'payment' => $payment,
-            ]);
+        if (!$paymentProvider instanceof PaymentProviderInterface) {
+            Logger::log('Not able to determine the gateway without payment provider');
 
             return;
         }
 
         $createShipmentRequest = $this->createShipmentFactory->createNewWithModel($payment, $lines, $tracking);
-        $this->payum->getGateway($paymentToken->getGatewayName())->execute($createShipmentRequest);
+        $this->payum->getGateway($paymentProvider->getGatewayConfig()->getGatewayName())->execute($createShipmentRequest);
 
         $getStatusRequest = $this->getStatusFactory->createNewWithModel($payment);
-        $this->payum->getGateway($paymentToken->getGatewayName())->execute($getStatusRequest);
+        $this->payum->getGateway($paymentProvider->getGatewayConfig()->getGatewayName())->execute($getStatusRequest);
     }
 
     /**

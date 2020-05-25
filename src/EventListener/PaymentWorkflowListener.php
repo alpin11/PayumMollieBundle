@@ -5,10 +5,12 @@ namespace CoreShop\Payum\MollieBundle\EventListener;
 
 use CoreShop\Bundle\PayumBundle\Factory\GetStatusFactoryInterface;
 use CoreShop\Bundle\PayumBundle\Model\PaymentSecurityToken;
+use CoreShop\Component\Core\Model\PaymentProviderInterface;
 use CoreShop\Component\Payment\Model\PaymentInterface;
 use CoreShop\Payum\MollieBundle\Factory\RefundArbitraryAmountFactoryInterface;
 use Payum\Core\Registry\RegistryInterface;
 use Payum\Core\Storage\StorageInterface;
+use Pimcore\Logger;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Workflow\Event\Event;
 
@@ -27,21 +29,17 @@ class PaymentWorkflowListener implements EventSubscriberInterface
      * @var RegistryInterface
      */
     private $payum;
-    /**
-     * @var StorageInterface
-     */
-    private $tokenStorage;
+
 
     public function __construct(
         RegistryInterface $payum,
-        StorageInterface $tokenStorage,
         RefundArbitraryAmountFactoryInterface $refundArbitraryAmountFactory,
         GetStatusFactoryInterface $getStatusRequestFactory
-    ) {
+    )
+    {
         $this->refundArbitraryAmountFactory = $refundArbitraryAmountFactory;
         $this->getStatusRequestFactory = $getStatusRequestFactory;
         $this->payum = $payum;
-        $this->tokenStorage = $tokenStorage;
     }
 
     /**
@@ -65,13 +63,20 @@ class PaymentWorkflowListener implements EventSubscriberInterface
             return;
         }
 
-        /** @var PaymentSecurityToken $token */
-        $token = $this->tokenStorage->find($payment->getId());
+
+        /** @var PaymentProviderInterface $paymentProvider */
+        $paymentProvider = $payment->getPaymentProvider();
+
+        if (!$paymentProvider instanceof PaymentProviderInterface) {
+            Logger::log('Not able to determine the gateway without payment provider');
+
+            return;
+        }
 
         $refundArbitraryAmount = $this->refundArbitraryAmountFactory->createNewWithModel($payment, $payment->getTotalAmount());
-        $this->payum->getGateway($token->getGatewayName())->execute($refundArbitraryAmount);
+        $this->payum->getGateway($paymentProvider->getGatewayConfig()->getGatewayName())->execute($refundArbitraryAmount);
 
         $getStatus = $this->getStatusRequestFactory->createNewWithModel($payment);
-        $this->payum->getGateway($token->getGatewayName())->execute($getStatus);
+        $this->payum->getGateway($paymentProvider->getGatewayConfig()->getGatewayName())->execute($getStatus);
     }
 }

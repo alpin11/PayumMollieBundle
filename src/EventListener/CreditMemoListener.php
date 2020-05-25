@@ -7,6 +7,7 @@ use CoreShop\Bundle\PayumBundle\Factory\GetStatusFactoryInterface;
 use CoreShop\Bundle\RefundBundle\Model\CreditMemoInterface;
 use CoreShop\Component\Core\Model\OrderInterface;
 use CoreShop\Component\Core\Model\PaymentInterface;
+use CoreShop\Component\Core\Model\PaymentProviderInterface;
 use CoreShop\Component\Payment\Repository\PaymentRepositoryInterface;
 use CoreShop\Payum\MollieBundle\Factory\RefundOrderLinesFactoryInterface;
 use Payum\Core\Registry\RegistryInterface;
@@ -32,10 +33,6 @@ class CreditMemoListener implements EventSubscriberInterface
      */
     private $payum;
     /**
-     * @var StorageInterface
-     */
-    private $tokenStorage;
-    /**
      * @var GetStatusFactoryInterface
      */
     private $getStatusRequestFactory;
@@ -44,13 +41,12 @@ class CreditMemoListener implements EventSubscriberInterface
         RefundOrderLinesFactoryInterface $refundOrderLinesFactory,
         PaymentRepositoryInterface $paymentRepository,
         RegistryInterface $payum,
-        StorageInterface $tokenStorage,
         GetStatusFactoryInterface $getStatusRequestFactory
-    ) {
+    )
+    {
         $this->refundOrderLinesFactory = $refundOrderLinesFactory;
         $this->paymentRepository = $paymentRepository;
         $this->payum = $payum;
-        $this->tokenStorage = $tokenStorage;
         $this->getStatusRequestFactory = $getStatusRequestFactory;
     }
 
@@ -86,7 +82,7 @@ class CreditMemoListener implements EventSubscriberInterface
         $payment = $this->getFirstValidPayment($order);
 
         if (!$payment instanceof PaymentInterface) {
-            Logger::log('found not payment');
+            Logger::log('found no payment');
             return;
         }
 
@@ -99,20 +95,20 @@ class CreditMemoListener implements EventSubscriberInterface
             ];
         }
 
-        /** @var TokenInterface $paymentToken */
-        $paymentToken = $this->tokenStorage->find($payment);
+        /** @var PaymentProviderInterface $paymentProvider */
+        $paymentProvider = $payment->getPaymentProvider();
 
-        if (!$paymentToken instanceof TokenInterface) {
-            Logger::log('Not able to determine the gateway without a payment security token');
+        if (!$paymentProvider instanceof PaymentProviderInterface) {
+            Logger::log('Not able to determine the gateway without payment provider');
 
             return;
         }
 
         $refundOrderLines = $this->refundOrderLinesFactory->createNewWithModel($payment, $itemsToRefund);
-        $this->payum->getGateway($paymentToken->getGatewayName())->execute($refundOrderLines);
+        $this->payum->getGateway($paymentProvider->getGatewayConfig()->getGatewayName())->execute($refundOrderLines);
 
         $getStatus = $this->getStatusRequestFactory->createNewWithModel($payment);
-        $this->payum->getGateway($paymentToken->getGatewayName())->execute($getStatus);
+        $this->payum->getGateway($paymentProvider->getGatewayConfig()->getGatewayName())->execute($getStatus);
     }
 
     /**
