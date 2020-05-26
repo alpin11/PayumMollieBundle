@@ -81,6 +81,7 @@ class OrderShipmentEventListener
             ];
         }
 
+
         $tracking = [];
 
         if ($object->getCarrier() instanceof CarrierInterface && !empty($object->getTrackingCode())) {

@@ -25,7 +25,7 @@ class RefundOrderLinesAction extends BaseApiAwareAction
         RequestNotSupportedException::assertSupports($this, $request);
 
         $details = ArrayObject::ensureArrayObject($request->getModel());
-        $details->validateNotEmpty([MollieDetails::ORDER_ID, MollieDetails::IS_CANCELABLE]);
+        $details->validateNotEmpty([MollieDetails::ORDER_ID, MollieDetails::STATUS]);
 
         /** @var MollieApiClient $mollie */
         $mollie = $this->api->getMollieApi();
