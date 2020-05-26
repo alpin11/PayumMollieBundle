@@ -3,8 +3,6 @@
 
 namespace CoreShop\Payum\MollieBundle\Factory;
 
-
-
 use CoreShop\Payum\MollieBundle\Request\Api\RefundOrder;
 
 interface RefundOrderFactoryInterface

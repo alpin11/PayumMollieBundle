@@ -20,23 +20,22 @@ class PaymentWorkflowListener implements EventSubscriberInterface
     /**
      * @var RefundArbitraryAmountFactoryInterface
      */
-    private $refundArbitraryAmountFactory;
+    protected $refundArbitraryAmountFactory;
     /**
      * @var GetStatusFactoryInterface
      */
-    private $getStatusRequestFactory;
+    protected $getStatusRequestFactory;
     /**
      * @var RegistryInterface
      */
-    private $payum;
+    protected $payum;
 
 
     public function __construct(
         RegistryInterface $payum,
         RefundArbitraryAmountFactoryInterface $refundArbitraryAmountFactory,
         GetStatusFactoryInterface $getStatusRequestFactory
-    )
-    {
+    ) {
         $this->refundArbitraryAmountFactory = $refundArbitraryAmountFactory;
         $this->getStatusRequestFactory = $getStatusRequestFactory;
         $this->payum = $payum;

@@ -25,27 +25,26 @@ class OrderShipmentEventListener
     /**
      * @var PaymentRepositoryInterface
      */
-    private $paymentRepository;
+    protected $paymentRepository;
     /**
      * @var CreateShipmentFactoryInterface
      */
-    private $createShipmentFactory;
+    protected $createShipmentFactory;
     /**
      * @var RegistryInterface
      */
-    private $payum;
+    protected $payum;
     /**
      * @var GetStatusFactoryInterface
      */
-    private $getStatusFactory;
+    protected $getStatusFactory;
 
     public function __construct(
         PaymentRepositoryInterface $paymentRepository,
         CreateShipmentFactoryInterface $createShipmentFactory,
         RegistryInterface $payum,
         GetStatusFactoryInterface $getStatusFactory
-    )
-    {
+    ) {
         $this->paymentRepository = $paymentRepository;
         $this->createShipmentFactory = $createShipmentFactory;
         $this->payum = $payum;
@@ -127,7 +126,7 @@ class OrderShipmentEventListener
      *
      * @return PaymentInterface|null
      */
-    private function findFirstValidPayment(OrderInterface $order)
+    protected function findFirstValidPayment(OrderInterface $order)
     {
         foreach ($this->paymentRepository->findForPayable($order) as $payment) {
             if (in_array($payment->getState(), [OrderPaymentInterface::STATE_AUTHORIZED, OrderPaymentInterface::STATE_COMPLETED], true)) {

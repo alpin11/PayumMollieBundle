@@ -19,31 +19,29 @@ use Symfony\Component\Workflow\Event\Event;
 
 class CreditMemoListener implements EventSubscriberInterface
 {
-
     /**
      * @var RefundOrderLinesFactoryInterface
      */
-    private $refundOrderLinesFactory;
+    protected $refundOrderLinesFactory;
     /**
      * @var PaymentRepositoryInterface
      */
-    private $paymentRepository;
+    protected $paymentRepository;
     /**
      * @var RegistryInterface
      */
-    private $payum;
+    protected $payum;
     /**
      * @var GetStatusFactoryInterface
      */
-    private $getStatusRequestFactory;
+    protected $getStatusRequestFactory;
 
     public function __construct(
         RefundOrderLinesFactoryInterface $refundOrderLinesFactory,
         PaymentRepositoryInterface $paymentRepository,
         RegistryInterface $payum,
         GetStatusFactoryInterface $getStatusRequestFactory
-    )
-    {
+    ) {
         $this->refundOrderLinesFactory = $refundOrderLinesFactory;
         $this->paymentRepository = $paymentRepository;
         $this->payum = $payum;
@@ -116,7 +114,7 @@ class CreditMemoListener implements EventSubscriberInterface
      *
      * @return PaymentInterface|null
      */
-    private function getFirstValidPayment(OrderInterface $order)
+    protected function getFirstValidPayment(OrderInterface $order)
     {
         foreach ($this->paymentRepository->findForPayable($order) as $payment) {
             if (in_array($payment->getState(), [PaymentInterface::STATE_AUTHORIZED, PaymentInterface::STATE_COMPLETED], true)) {
