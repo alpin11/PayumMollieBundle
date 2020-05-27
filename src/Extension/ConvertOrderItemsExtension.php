@@ -98,7 +98,10 @@ class ConvertOrderItemsExtension extends AbstractConvertOrderExtension
             'unitPrice' => $this->transformMoneyWithCurrency($amountGross, $currencyCode),
             'totalAmount' => $this->transformMoneyWithCurrency($amountGross, $currencyCode),
             'vatAmount' => $this->transformMoneyWithCurrency($vatAmount, $currencyCode),
-            'vatRate' => sprintf("%01.2f", $vatRate)
+            'vatRate' => sprintf("%01.2f", $vatRate),
+            'metadata' => json_encode([
+                'typeIdentifier' => $adjustment->getTypeIdentifier(),
+            ])
         ];
     }
 
