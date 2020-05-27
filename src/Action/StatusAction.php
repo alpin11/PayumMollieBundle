@@ -42,10 +42,15 @@ class StatusAction extends BaseApiAwareAction
 
         $status = $details[MollieDetails::STATUS];
 
+        if ($status == OrderStatus::STATUS_SHIPPING) {
+            return;
+        }
+
         switch ($status) {
             case OrderStatus::STATUS_PENDING:
                 $request->markPending();
                 break;
+            case OrderStatus::STATUS_COMPLETED:
             case OrderStatus::STATUS_PAID:
                 $request->markCaptured();
                 break;
@@ -59,8 +64,10 @@ class StatusAction extends BaseApiAwareAction
                 $request->markExpired();
                 break;
             case OrderStatus::STATUS_CREATED:
-            default:
                 $request->markNew();
+                break;
+            default:
+                $request->markUnknown();
                 break;
         }
     }
