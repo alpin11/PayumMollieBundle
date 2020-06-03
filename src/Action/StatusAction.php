@@ -28,6 +28,7 @@ class StatusAction extends BaseApiAwareAction
 
         /** @var MollieApiClient $mollie */
         $mollie = $this->api->getMollieApi();
+        $status = null;
 
         if ($details[MollieDetails::ORDER_ID]) {
             $mollieOrder = $mollie->orders->get($details[MollieDetails::ORDER_ID]);
@@ -40,9 +41,8 @@ class StatusAction extends BaseApiAwareAction
             $details[MollieDetails::LINES] = $mollieOrder->lines;
         }
 
-        $status = $details[MollieDetails::STATUS];
-
-        if ($status == OrderStatus::STATUS_SHIPPING) {
+        if (null == $status) {
+            $request->markNew();
             return;
         }
 
@@ -52,6 +52,7 @@ class StatusAction extends BaseApiAwareAction
                 break;
             case OrderStatus::STATUS_COMPLETED:
             case OrderStatus::STATUS_PAID:
+            case OrderStatus::STATUS_SHIPPING:
                 $request->markCaptured();
                 break;
             case OrderStatus::STATUS_AUTHORIZED:
