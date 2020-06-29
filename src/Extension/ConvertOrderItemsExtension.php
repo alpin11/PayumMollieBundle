@@ -146,7 +146,7 @@ class ConvertOrderItemsExtension extends AbstractConvertOrderExtension
     protected function transformShippingToLineItem(OrderInterface $order, $currencyCode)
     {
         $shippingGross = $order->getShipping(true);
-        $vatAmount = round($order->getShippingTax() / $this->decimalFactor);
+        $vatAmount = $order->getShippingTax();
         $vatRate = $order->getShippingTaxRate();
 
         return [
