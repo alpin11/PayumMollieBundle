@@ -4,6 +4,7 @@
 namespace CoreShop\Payum\MollieBundle\Extension;
 
 use Carbon\Carbon;
+use CoreShop\Component\Core\Model\StoreInterface;
 use CoreShop\Component\Order\Model\OrderInterface;
 use CoreShop\Component\Payment\Model\PaymentInterface;
 use CoreShop\Component\Core\Model\ProductInterface;
@@ -29,7 +30,7 @@ class ConvertOrderExtension extends AbstractConvertOrderExtension
         $customer = $order->getCustomer();
 
         $result['orderNumber'] = $order->getOrderNumber();
-        $result['locale'] = $order->getLocaleCode();
+        $result['locale'] = $this->getLocaleCode($order);
 
         if ($customer instanceof MollieCustomerInterface && $customer->getDateOfBirth() instanceof Carbon) {
             $result['consumerDateOfBirth'] = $customer->getDateOfBirth()->format('Y-m-d');
@@ -52,5 +53,24 @@ class ConvertOrderExtension extends AbstractConvertOrderExtension
 
 
         return $result;
+    }
+
+    /**
+     * @param OrderInterface $order
+     *
+     * @return string
+     */
+    private function getLocaleCode(OrderInterface $order)
+    {
+        if (strpos($order->getLocaleCode(), '_') > -1) {
+            return $order->getLocaleCode();
+        }
+
+        // locale has no country information --> add it via store
+        /** @var StoreInterface $store */
+        $store = $order->getStore();
+
+        return sprintf('%s_%s', $order->getLocaleCode(), strtoupper($store->getBaseCountry()->getIsoCode()));
+
     }
 }
