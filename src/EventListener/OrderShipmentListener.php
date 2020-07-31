@@ -19,10 +19,6 @@ use Symfony\Component\Workflow\Event\Event;
 class OrderShipmentListener extends AbstractPaymentAwareListener
 {
     /**
-     * @var PaymentRepositoryInterface
-     */
-    protected $paymentRepository;
-    /**
      * @var CreateShipmentFactoryInterface
      */
     protected $createShipmentFactory;

@@ -19,10 +19,7 @@ use Symfony\Component\Workflow\Event\Event;
 
 class OrderListener extends AbstractPaymentAwareListener
 {
-    /**
-     * @var PaymentRepositoryInterface
-     */
-    private $paymentRepository;
+
     /**
      * @var ShipAllFactoryInterface
      */
@@ -50,6 +47,9 @@ class OrderListener extends AbstractPaymentAwareListener
         parent::__construct($paymentRepository);
     }
 
+    /**
+     * @param Event $event
+     */
     public function onShipped(Event $event)
     {
         $object = $event->getSubject();

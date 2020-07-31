@@ -14,3 +14,7 @@ services:
     CoreShop\Payum\MollieBundle\Factory\CreateShipmentFactoryInterface: '@CoreShop\Payum\MollieBundle\Factory\CreateShipmentFactory'
     CoreShop\Payum\MollieBundle\Factory\CreateShipmentFactory:
 
+    coreshop.payum.mollie.factory.ship_all: '@CoreShop\Payum\MollieBundle\Factory\ShipAllFactory'
+    CoreShop\Payum\MollieBundle\Factory\ShipAllFactoryInterface: '@CoreShop\Payum\MollieBundle\Factory\ShipAllFactory'
+    CoreShop\Payum\MollieBundle\Factory\ShipAllFactory:
+

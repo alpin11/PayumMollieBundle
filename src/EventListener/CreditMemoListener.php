@@ -17,16 +17,12 @@ use Pimcore\Logger;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Workflow\Event\Event;
 
-class CreditMemoListener implements EventSubscriberInterface
+class CreditMemoListener extends AbstractPaymentAwareListener implements EventSubscriberInterface
 {
     /**
      * @var RefundOrderLinesFactoryInterface
      */
     protected $refundOrderLinesFactory;
-    /**
-     * @var PaymentRepositoryInterface
-     */
-    protected $paymentRepository;
     /**
      * @var RegistryInterface
      */
@@ -41,11 +37,13 @@ class CreditMemoListener implements EventSubscriberInterface
         PaymentRepositoryInterface $paymentRepository,
         RegistryInterface $payum,
         GetStatusFactoryInterface $getStatusRequestFactory
-    ) {
+    )
+    {
         $this->refundOrderLinesFactory = $refundOrderLinesFactory;
-        $this->paymentRepository = $paymentRepository;
         $this->payum = $payum;
         $this->getStatusRequestFactory = $getStatusRequestFactory;
+
+        parent::__construct($paymentRepository);
     }
 
     /**
@@ -77,7 +75,7 @@ class CreditMemoListener implements EventSubscriberInterface
             return;
         }
 
-        $payment = $this->getFirstValidPayment($order);
+        $payment = $this->findFirstValidPayment($order);
 
         if (!$payment instanceof PaymentInterface) {
             Logger::log('found no payment');
@@ -107,21 +105,5 @@ class CreditMemoListener implements EventSubscriberInterface
 
         $getStatus = $this->getStatusRequestFactory->createNewWithModel($payment);
         $this->payum->getGateway($paymentProvider->getGatewayConfig()->getGatewayName())->execute($getStatus);
-    }
-
-    /**
-     * @param OrderInterface $order
-     *
-     * @return PaymentInterface|null
-     */
-    protected function getFirstValidPayment(OrderInterface $order)
-    {
-        foreach ($this->paymentRepository->findForPayable($order) as $payment) {
-            if (in_array($payment->getState(), [PaymentInterface::STATE_AUTHORIZED, PaymentInterface::STATE_COMPLETED], true)) {
-                return $payment;
-            }
-        }
-
-        return null;
     }
 }
