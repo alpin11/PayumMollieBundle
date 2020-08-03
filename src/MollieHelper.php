@@ -29,8 +29,10 @@ class MollieHelper
                 continue;
             }
 
-            $orderItemId = $orderItem['orderItemId'];
+            $orderItemId = $orderItem['orderItemId'] ?? null;
             $quantity = $orderItem['quantity'] ?? 0;
+            $isAdjustment = $orderItem['isAdjustment'] ?? false;
+            $amount = $orderItem['amount'] ?? null;
 
 
             foreach ($linesInDetails as $mollieLine) {
@@ -39,13 +41,25 @@ class MollieHelper
                 }
 
                 $metadata = json_decode($mollieLine['metadata'], true);
-                $metadataOrderItemId = $metadata['orderItemPimcoreId'] ?? null;
 
-                if ($metadataOrderItemId == $orderItemId) {
-                    $mollieLines[] = [
-                        'id' => $mollieLine['id'],
-                        'quantity' => $quantity
-                    ];
+                if ($isAdjustment) {
+                    $metadataTypeIdentifier = $metadata['typeIdentifier'] ?? null;
+
+                    if ($metadataTypeIdentifier == $orderItemId) {
+                        $mollieLines[] = [
+                            'id' => $mollieLine['id'],
+                            'amount' => $amount
+                        ];
+                    }
+                } else {
+                    $metadataOrderItemId = $metadata['orderItemPimcoreId'] ?? null;
+
+                    if ($metadataOrderItemId == $orderItemId) {
+                        $mollieLines[] = [
+                            'id' => $mollieLine['id'],
+                            'quantity' => $quantity
+                        ];
+                    }
                 }
             }
         }

@@ -31,17 +31,23 @@ class CreditMemoListener extends AbstractPaymentAwareListener implements EventSu
      * @var GetStatusFactoryInterface
      */
     protected $getStatusRequestFactory;
+    /**
+     * @var int
+     */
+    private $decimalFactor;
 
     public function __construct(
         RefundOrderLinesFactoryInterface $refundOrderLinesFactory,
         PaymentRepositoryInterface $paymentRepository,
         RegistryInterface $payum,
-        GetStatusFactoryInterface $getStatusRequestFactory
+        GetStatusFactoryInterface $getStatusRequestFactory,
+        int $decimalFactor
     )
     {
         $this->refundOrderLinesFactory = $refundOrderLinesFactory;
         $this->payum = $payum;
         $this->getStatusRequestFactory = $getStatusRequestFactory;
+        $this->decimalFactor = $decimalFactor;
 
         parent::__construct($paymentRepository);
     }
@@ -96,8 +102,20 @@ class CreditMemoListener extends AbstractPaymentAwareListener implements EventSu
             }
 
             $lines[] = [
+                'isAdjustment' => false,
                 'orderItemId' => $orderItemId,
                 'quantity' => $item->getQuantity()
+            ];
+        }
+
+        foreach ($creditMemo->getAdjustments() as $adjustment) {
+            $lines[] = [
+                'isAdjustment' => true,
+                'orderItemId' => $adjustment->getTypeIdentifier(),
+                'amount' => [
+                    'value' => sprintf("%01.2f", ($adjustment->getAmount(true) / $this->decimalFactor)),
+                    'currency' => $creditMemo->getOrder()->getCurrency()->getIsoCode()
+                ]
             ];
         }
 
