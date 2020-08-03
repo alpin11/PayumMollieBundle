@@ -11,8 +11,6 @@ use CoreShop\Component\Core\Model\PaymentProviderInterface;
 use CoreShop\Component\Payment\Repository\PaymentRepositoryInterface;
 use CoreShop\Payum\MollieBundle\Factory\RefundOrderLinesFactoryInterface;
 use Payum\Core\Registry\RegistryInterface;
-use Payum\Core\Security\TokenInterface;
-use Payum\Core\Storage\StorageInterface;
 use Pimcore\Logger;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Workflow\Event\Event;
@@ -128,7 +126,7 @@ class CreditMemoListener extends AbstractPaymentAwareListener implements EventSu
             return;
         }
 
-        $refundOrderLines = $this->refundOrderLinesFactory->createNewWithModel($payment, $itemsToRefund);
+        $refundOrderLines = $this->refundOrderLinesFactory->createNewWithModel($payment, $lines);
         $this->payum->getGateway($paymentProvider->getGatewayConfig()->getGatewayName())->execute($refundOrderLines);
 
         $getStatus = $this->getStatusRequestFactory->createNewWithModel($payment);

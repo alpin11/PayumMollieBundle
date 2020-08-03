@@ -20,18 +20,10 @@ class MollieHelper
         $mollieLines = [];
         $linesInDetails = $details[MollieDetails::LINES];
 
-        if (!is_array($linesInDetails) || count($linesInDetails) == 0) {
-            return [];
-        }
-
         foreach ($orderItems as $orderItem) {
-            if (!isset($orderItem['orderItemId'])) {
-                continue;
-            }
-
             $orderItemId = $orderItem['orderItemId'] ?? null;
             $quantity = $orderItem['quantity'] ?? 0;
-            $isAdjustment = $orderItem['isAdjustment'] ?? false;
+            $isAdjustment = $orderItem['isAdjustment'];
             $amount = $orderItem['amount'] ?? null;
 
 
@@ -50,6 +42,7 @@ class MollieHelper
                             'id' => $mollieLine['id'],
                             'amount' => $amount
                         ];
+                        break;
                     }
                 } else {
                     $metadataOrderItemId = $metadata['orderItemPimcoreId'] ?? null;
@@ -59,6 +52,7 @@ class MollieHelper
                             'id' => $mollieLine['id'],
                             'quantity' => $quantity
                         ];
+                        break;
                     }
                 }
             }
