@@ -43,3 +43,8 @@ services:
     CoreShop\Payum\MollieBundle\Action\Api\CreateShipmentAction:
         tags:
             - { name: payum.action, factory: mollie, alias: payum.action.api.create_shipment }
+
+    coreshop.payum.mollie.action.api.ship_all: '@CoreShop\Payum\MollieBundle\Action\Api\ShipAllAction'
+    CoreShop\Payum\MollieBundle\Action\Api\ShipAllAction:
+        tags:
+            - { name: payum.action, factory: mollie, alias: payum.action.api.ship_all }

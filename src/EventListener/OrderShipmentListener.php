@@ -9,23 +9,15 @@ use CoreShop\Component\Core\Model\OrderInterface;
 use CoreShop\Component\Core\Model\OrderItemInterface;
 use CoreShop\Component\Core\Model\OrderShipmentInterface;
 use CoreShop\Component\Core\Model\PaymentProviderInterface;
-use CoreShop\Component\Order\Model\OrderPaymentInterface;
 use CoreShop\Component\Payment\Model\PaymentInterface;
 use CoreShop\Component\Payment\Repository\PaymentRepositoryInterface;
 use CoreShop\Payum\MollieBundle\Factory\CreateShipmentFactoryInterface;
 use Payum\Core\Registry\RegistryInterface;
-use Payum\Core\Security\TokenInterface;
-use Payum\Core\Storage\StorageInterface;
 use Pimcore\Logger;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Workflow\Event\Event;
 
-class OrderShipmentEventListener
+class OrderShipmentListener extends AbstractPaymentAwareListener
 {
-    /**
-     * @var PaymentRepositoryInterface
-     */
-    protected $paymentRepository;
     /**
      * @var CreateShipmentFactoryInterface
      */
@@ -44,11 +36,13 @@ class OrderShipmentEventListener
         CreateShipmentFactoryInterface $createShipmentFactory,
         RegistryInterface $payum,
         GetStatusFactoryInterface $getStatusFactory
-    ) {
-        $this->paymentRepository = $paymentRepository;
+    )
+    {
         $this->createShipmentFactory = $createShipmentFactory;
         $this->payum = $payum;
         $this->getStatusFactory = $getStatusFactory;
+
+        parent::__construct($paymentRepository);
     }
 
     /**
@@ -64,23 +58,28 @@ class OrderShipmentEventListener
 
         $order = $object->getOrder();
 
-        if (!$object instanceof OrderInterface) {
+        if (!$order instanceof OrderInterface) {
             return;
         }
 
         $lines = [];
 
         foreach ($object->getItems() as $orderShipmentItem) {
-            if (!($orderItem = $orderShipmentItem->getOrderItem()) instanceof OrderItemInterface) {
+            $orderItemId = $this->resolverOrderItemId($orderShipmentItem);
+
+            if (null == $orderItemId) {
+                Logger::info('Not able to find order item id for shipment', [
+                    'shipment' => $orderShipmentItem
+                ]);
+
                 continue;
             }
 
             $lines[] = [
-                'orderItemId' => $orderItem->getId(),
+                'orderItemId' => $orderItemId,
                 'quantity' => $orderShipmentItem->getQuantity()
             ];
         }
-
 
         $tracking = [];
 
@@ -120,21 +119,5 @@ class OrderShipmentEventListener
 
         $getStatusRequest = $this->getStatusFactory->createNewWithModel($payment);
         $this->payum->getGateway($paymentProvider->getGatewayConfig()->getGatewayName())->execute($getStatusRequest);
-    }
-
-    /**
-     * @param OrderInterface $order
-     *
-     * @return PaymentInterface|null
-     */
-    protected function findFirstValidPayment(OrderInterface $order)
-    {
-        foreach ($this->paymentRepository->findForPayable($order) as $payment) {
-            if (in_array($payment->getState(), [OrderPaymentInterface::STATE_AUTHORIZED, OrderPaymentInterface::STATE_COMPLETED], true)) {
-                return $payment;
-            }
-        }
-
-        return null;
     }
 }
