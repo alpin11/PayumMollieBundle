@@ -5,10 +5,7 @@ namespace CoreShop\Payum\MollieBundle\EventListener;
 
 
 use CoreShop\Bundle\PayumBundle\Factory\GetStatusFactoryInterface;
-use CoreShop\Component\Core\Model\CarrierInterface;
 use CoreShop\Component\Core\Model\OrderInterface;
-use CoreShop\Component\Core\Model\OrderItemInterface;
-use CoreShop\Component\Core\Model\OrderShipmentInterface;
 use CoreShop\Component\Core\Model\PaymentProviderInterface;
 use CoreShop\Component\Payment\Model\PaymentInterface;
 use CoreShop\Component\Payment\Repository\PaymentRepositoryInterface;

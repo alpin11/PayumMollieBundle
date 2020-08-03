@@ -78,15 +78,25 @@ class CreditMemoListener extends AbstractPaymentAwareListener implements EventSu
         $payment = $this->findFirstValidPayment($order);
 
         if (!$payment instanceof PaymentInterface) {
-            Logger::log('found no payment');
+            Logger::log('found no valid payment');
             return;
         }
 
         $itemsToRefund = [];
 
         foreach ($creditMemo->getItems() as $item) {
-            $itemsToRefund[] = [
-                'orderItemId' => $item->getOrderItem()->getId(),
+            $orderItemId = $this->resolverOrderItemId($item);
+
+            if (null == $orderItemId) {
+                Logger::info('Not able to find order item id for credit memo', [
+                    'shipment' => $item
+                ]);
+
+                continue;
+            }
+
+            $lines[] = [
+                'orderItemId' => $orderItemId,
                 'quantity' => $item->getQuantity()
             ];
         }

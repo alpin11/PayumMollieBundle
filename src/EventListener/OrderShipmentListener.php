@@ -65,12 +65,18 @@ class OrderShipmentListener extends AbstractPaymentAwareListener
         $lines = [];
 
         foreach ($object->getItems() as $orderShipmentItem) {
-            if (!($orderItem = $orderShipmentItem->getOrderItem()) instanceof OrderItemInterface) {
+            $orderItemId = $this->resolverOrderItemId($orderShipmentItem);
+
+            if (null == $orderItemId) {
+                Logger::info('Not able to find order item id for shipment', [
+                    'shipment' => $orderShipmentItem
+                ]);
+
                 continue;
             }
 
             $lines[] = [
-                'orderItemId' => $orderItem->getId(),
+                'orderItemId' => $orderItemId,
                 'quantity' => $orderShipmentItem->getQuantity()
             ];
         }

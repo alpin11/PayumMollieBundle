@@ -14,6 +14,9 @@ use Payum\Core\Exception\RequestNotSupportedException;
 
 class ShipAllAction extends BaseApiAwareAction
 {
+    /**
+     * @inheritDoc
+     */
     public function execute($request)
     {
         /** @var $request ShipAll */
@@ -29,7 +32,6 @@ class ShipAllAction extends BaseApiAwareAction
         /** @var MollieApiClient $mollie */
         $mollie = $this->api->getMollieApi();
 
-
         try {
             $order = $mollie->orders->get($details[MollieDetails::ORDER_ID]);
 
@@ -40,6 +42,9 @@ class ShipAllAction extends BaseApiAwareAction
         }
     }
 
+    /**
+     * @inheritDoc
+     */
     public function supports($request)
     {
         return $request instanceof ShipAll &&

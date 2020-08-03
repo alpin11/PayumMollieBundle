@@ -5,6 +5,8 @@ namespace CoreShop\Payum\MollieBundle\EventListener;
 
 
 use CoreShop\Component\Core\Model\OrderInterface;
+use CoreShop\Component\Core\Model\OrderItemInterface;
+use CoreShop\Component\Order\Model\OrderDocumentItemInterface;
 use CoreShop\Component\Order\Model\OrderPaymentInterface;
 use CoreShop\Component\Payment\Model\PaymentInterface;
 use CoreShop\Component\Payment\Repository\PaymentRepositoryInterface;
@@ -35,5 +37,15 @@ abstract class AbstractPaymentAwareListener
         }
 
         return null;
+    }
+
+    /**
+     * @param OrderDocumentItemInterface $orderDocumentItem
+     *
+     * @return int|null
+     */
+    protected function resolverOrderItemId(OrderDocumentItemInterface $orderDocumentItem)
+    {
+        return $orderDocumentItem->getOrderItem() instanceof OrderItemInterface ? $orderDocumentItem->getOrderItem()->getId() : null;
     }
 }
