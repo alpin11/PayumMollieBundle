@@ -1,4 +1,6 @@
 services:
+    _defaults:
+        public: true
 
     CoreShop\Payum\MollieBundle\EventListener\CreditMemoListener:
         arguments:
@@ -6,5 +8,6 @@ services:
             - '@coreshop.repository.payment'
             - '@payum'
             - '@coreshop.factory.payum_get_status'
+            - '%coreshop.currency.decimal_factor%'
         tags:
             - { name: kernel.event_subscriber }
