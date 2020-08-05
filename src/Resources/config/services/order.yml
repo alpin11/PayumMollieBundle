@@ -2,7 +2,16 @@ services:
     _defaults:
         public: true
 
-    CoreShop\Payum\MollieBundle\EventListener\OrderShipmentEventListener:
+    CoreShop\Payum\MollieBundle\EventListener\OrderListener:
+        arguments:
+            - '@coreshop.repository.payment'
+            - '@coreshop.payum.mollie.factory.ship_all'
+            - '@payum'
+            - '@coreshop.factory.payum_get_status'
+        tags:
+            - { name: kernel.event_listener, event: workflow.coreshop_order_shipment.enter.shipped, method: onShipped }
+
+    CoreShop\Payum\MollieBundle\EventListener\OrderShipmentListener:
         arguments:
             - '@coreshop.repository.payment'
             - '@coreshop.payum.mollie.factory.create_shipment'

@@ -130,7 +130,8 @@ class ConvertOrderItemsExtension extends AbstractConvertOrderExtension
             'vatRate' => sprintf("%01.2f", $vatRate),
             'metadata' => json_encode([
                 'voucherCode' => $priceRuleItem->getVoucherCode(),
-                'cartPriceRulePimcoreId' => $priceRuleItem->getCartPriceRule() instanceof CartPriceRuleInterface ? $priceRuleItem->getCartPriceRule()->getId() : null
+                'cartPriceRulePimcoreId' => $priceRuleItem->getCartPriceRule() instanceof CartPriceRuleInterface ? $priceRuleItem->getCartPriceRule()->getId() : null,
+                'typeIdentifier' => AdjustmentInterface::CART_PRICE_RULE
             ])
         ];
     }
@@ -152,12 +153,15 @@ class ConvertOrderItemsExtension extends AbstractConvertOrderExtension
         return [
             [
                 'type' => OrderLineType::TYPE_SHIPPING_FEE,
-                'name' => 'shipping costs',
+                'name' => 'Shipping Costs',
                 'quantity' => 1,
                 'unitPrice' => $this->transformMoneyWithCurrency($shippingGross, $currencyCode),
                 'totalAmount' => $this->transformMoneyWithCurrency($shippingGross, $currencyCode),
                 'vatAmount' => $this->transformMoneyWithCurrency($vatAmount, $currencyCode),
                 'vatRate' => sprintf("%01.2f", $vatRate),
+                'metadata' => json_encode([
+                    'typeIdentifier' => AdjustmentInterface::SHIPPING
+                ])
             ]
         ];
     }
