@@ -50,9 +50,7 @@ class StatusAction extends BaseApiAwareAction
             case OrderStatus::STATUS_PENDING:
                 $request->markPending();
                 break;
-            case OrderStatus::STATUS_COMPLETED:
             case OrderStatus::STATUS_PAID:
-            case OrderStatus::STATUS_SHIPPING:
                 $request->markCaptured();
                 break;
             case OrderStatus::STATUS_AUTHORIZED:
