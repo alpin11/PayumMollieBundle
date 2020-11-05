@@ -4,6 +4,7 @@
 namespace CoreShop\Payum\MollieBundle\EventListener;
 
 use CoreShop\Bundle\PayumBundle\Factory\GetStatusFactoryInterface;
+use CoreShop\Bundle\PayumBundle\Model\GatewayConfig;
 use CoreShop\Component\Core\Model\CarrierInterface;
 use CoreShop\Component\Core\Model\OrderInterface;
 use CoreShop\Component\Core\Model\OrderItemInterface;
@@ -110,6 +111,16 @@ class OrderShipmentListener extends AbstractPaymentAwareListener
 
         if (!$paymentProvider instanceof PaymentProviderInterface) {
             Logger::log('Not able to determine the gateway without payment provider');
+
+            return;
+        }
+
+        if (!$paymentProvider->getGatewayConfig() instanceof GatewayConfig) {
+            return;
+        }
+
+        if ($paymentProvider->getGatewayConfig()->getFactoryName() != 'mollie') {
+            Logger::info("not a mollie payment. skipping actions.");
 
             return;
         }

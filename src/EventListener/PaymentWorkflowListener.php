@@ -4,6 +4,7 @@
 namespace CoreShop\Payum\MollieBundle\EventListener;
 
 use CoreShop\Bundle\PayumBundle\Factory\GetStatusFactoryInterface;
+use CoreShop\Bundle\PayumBundle\Model\GatewayConfig;
 use CoreShop\Bundle\PayumBundle\Model\PaymentSecurityToken;
 use CoreShop\Component\Core\Model\PaymentProviderInterface;
 use CoreShop\Component\Payment\Model\PaymentInterface;
@@ -35,7 +36,8 @@ class PaymentWorkflowListener implements EventSubscriberInterface
         RegistryInterface $payum,
         RefundArbitraryAmountFactoryInterface $refundArbitraryAmountFactory,
         GetStatusFactoryInterface $getStatusRequestFactory
-    ) {
+    )
+    {
         $this->refundArbitraryAmountFactory = $refundArbitraryAmountFactory;
         $this->getStatusRequestFactory = $getStatusRequestFactory;
         $this->payum = $payum;
@@ -68,6 +70,16 @@ class PaymentWorkflowListener implements EventSubscriberInterface
 
         if (!$paymentProvider instanceof PaymentProviderInterface) {
             Logger::log('Not able to determine the gateway without payment provider');
+
+            return;
+        }
+
+        if (!$paymentProvider->getGatewayConfig() instanceof GatewayConfig) {
+            return;
+        }
+
+        if ($paymentProvider->getGatewayConfig()->getFactoryName() != 'mollie') {
+            Logger::info("not a mollie payment. skipping actions.");
 
             return;
         }
