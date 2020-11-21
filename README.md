@@ -2,12 +2,12 @@
 This bundle activates the Mollie PaymentGateway in CoreShop.
 It requires the [alpin11/payum-mollie](https://github.com/alpin11/payum-mollie) repository which will be installed automatically.
 
-## [Development]  Installation
+## Installation
 
 #### 1. Composer
 
 ```json
-    "alpin11/payum-mollie-bundle": "~1.0.0"
+    "alpin11/payum-mollie-bundle": "^1.6"
 ```
 
 #### 2. Activate
