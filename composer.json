@@ -19,8 +19,8 @@
   ],
   "require": {
     "php": "^7.0",
-    "coreshop/payum-bundle": "^2.0",
-    "payum/core": "^1.5",
+    "pimcore/pimcore": "^6.8",
+    "coreshop/payum-bundle": "^2.2",
     "mollie/mollie-api-php": "^2.16",
     "misd/phone-number-bundle": "^1.3"
   },
