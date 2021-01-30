@@ -199,8 +199,15 @@ class ConvertOrderItemsExtension extends AbstractConvertOrderExtension
         if ($product instanceof ProductInterface) {
             $lineItem['sku'] = $product->getSku();
 
-            if ($product->getImage() instanceof Asset\Image) {
-                $lineItem['imageUrl'] = Tool::getHostUrl() . $product->getImage()->getFullPath();
+            $image = $product->getImage();
+
+            if ($image instanceof Asset\Image) {
+                $lineItem['imageUrl'] = $image->getThumbnail([
+                    'width' => 150,
+                    'aspectratio' => true,
+                    'format' => 'png',
+                    'quality' => 80
+                ]);
             }
 
             $lineItem['productUrl'] = Tool::getHostUrl() . $this->linkGeneratorHelper->getPath($product, null, [
