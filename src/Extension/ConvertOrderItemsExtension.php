@@ -46,8 +46,10 @@ class ConvertOrderItemsExtension extends AbstractConvertOrderExtension
             $lineItems[] = $this->transformOrderItemToLineItem($item, $payment->getCurrencyCode(), $order->getLocaleCode());
         }
 
-        foreach ($order->getPriceRules() as $priceRuleItem) {
-            $lineItems[] = $this->transformPriceRuleItemToLineItem($priceRuleItem, $payment->getCurrencyCode(), $order->getLocaleCode());
+        if ($order->hasPriceRules()) {
+            foreach ($order->getPriceRuleItems()->getItems() as $priceRuleItem) {
+                $lineItems[] = $this->transformPriceRuleItemToLineItem($priceRuleItem, $payment->getCurrencyCode(), $order->getLocaleCode());
+            }
         }
 
         if ($order->getShipping() > 0) {
