@@ -60,7 +60,7 @@ class StatusAction extends BaseApiAwareAction
                 $request->markCanceled();
                 break;
             case OrderStatus::STATUS_EXPIRED:
-                $request->markExpired();
+                $request->markCanceled();
                 break;
             case OrderStatus::STATUS_CREATED:
                 $request->markNew();
