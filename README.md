@@ -7,7 +7,7 @@ It requires the [alpin11/payum-mollie](https://github.com/alpin11/payum-mollie) 
 #### 1. Composer
 
 ```json
-    "alpin11/payum-mollie-bundle": "^1.6"
+    "alpin11/payum-mollie-bundle": "^2.0"
 ```
 
 #### 2. Activate
