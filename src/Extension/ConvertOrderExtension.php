@@ -34,9 +34,6 @@ class ConvertOrderExtension extends AbstractConvertOrderExtension
             $this->getLocaleCode($order)
         );
 
-        dump($result['locale']);
-        die;
-
         if ($customer instanceof MollieCustomerInterface && $customer->getDateOfBirth() instanceof Carbon) {
             $result['consumerDateOfBirth'] = $customer->getDateOfBirth()->format('Y-m-d');
         }
