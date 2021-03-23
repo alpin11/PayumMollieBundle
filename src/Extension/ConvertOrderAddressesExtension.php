@@ -50,42 +50,6 @@ final class ConvertOrderAddressesExtension extends AbstractConvertOrderExtension
     }
 
     /**
-     * Checking if the locale is supported by mollie, else it will set a default locale
-     * https://docs.mollie.com/reference/v2/payments-api/create-payment
-     *
-     * @param string $locale
-     * @return string
-     */
-    private function isLocaleValid(string $locale) : string
-    {
-        $validLocales = [
-            'en_US',
-            'nl_NL',
-            'nl_BE',
-            'fr_FR',
-            'fr_BE',
-            'de_DE',
-            'de_AT',
-            'de_CH',
-            'es_ES',
-            'ca_ES',
-            'pt_PT',
-            'it_IT',
-            'nb_NO',
-            'sv_SE',
-            'fi_FI',
-            'da_DK',
-            'is_IS',
-            'hu_HU',
-            'pl_PL',
-            'lv_LV',
-            'lt_LT',
-        ];
-
-        return in_array($locale, $validLocales) ? $locale : 'en_US';
-    }
-
-    /**
      * @param CustomerInterface $customer
      * @param AddressInterface $address
      * @param null $locale
@@ -114,7 +78,7 @@ final class ConvertOrderAddressesExtension extends AbstractConvertOrderExtension
             'postalCode' => $address->getPostcode(),
             'city' => $address->getCity(),
             'region' => $address->getState() instanceof StateInterface ? $address->getState()->getName($locale) : null,
-            'country' => $address->getCountry() instanceof CountryInterface ? $this->isLocaleValid($address->getCountry()->getIsoCode()) : null,
+            'country' => $address->getCountry() instanceof CountryInterface ? $address->getCountry()->getIsoCode() : null,
         ];
     }
 }
