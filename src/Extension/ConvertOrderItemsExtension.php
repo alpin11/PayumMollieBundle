@@ -217,7 +217,10 @@ class ConvertOrderItemsExtension extends AbstractConvertOrderExtension
                     $imageUrl = Tool::getHostUrl() . $imageUrl;
                 }
 
-                $lineItem['imageUrl'] = $imageUrl;
+                // only set imageUrl if its valid
+                if (filter_var($imageUrl, FILTER_VALIDATE_URL)) {
+                    $lineItem['imageUrl'] = $imageUrl;
+                };
             }
 
             $lineItem['productUrl'] = Tool::getHostUrl() . $this->linkGeneratorHelper->getPath($product, null, [
