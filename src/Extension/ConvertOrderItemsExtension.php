@@ -209,7 +209,7 @@ class ConvertOrderItemsExtension extends AbstractConvertOrderExtension
                     'aspectratio' => true,
                     'format' => 'png',
                     'quality' => 80
-                ]);
+                ])->getPath();
 
                 // if not valid url we only have the path to the thumbnail
                 // so we need to prepend the host url
