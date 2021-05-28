@@ -2,12 +2,15 @@
 
 namespace CoreShop\Payum\MollieBundle\Action;
 
+use CoreShop\Bundle\OrderBundle\Pimcore\GridColumnConfig\Operator\OrderState;
 use CoreShop\Payum\MollieBundle\Action\Api\BaseApiAwareAction;
 use CoreShop\Payum\MollieBundle\MollieDetails;
 use Mollie\Api\Exceptions\ApiException;
 use Mollie\Api\MollieApiClient;
+use Mollie\Api\Resources\Method;
 use Mollie\Api\Resources\OrderLine;
 use Mollie\Api\Types\OrderStatus;
+use Mollie\Api\Types\PaymentMethod;
 use Mollie\Api\Types\PaymentStatus;
 use Payum\Core\Bridge\Spl\ArrayObject;
 use Payum\Core\Exception\RequestNotSupportedException;
@@ -46,6 +49,12 @@ class StatusAction extends BaseApiAwareAction
             return;
         }
 
+        // otherwise we run into order revise
+        if ($mollieOrder->method == PaymentMethod::BANKTRANSFER && $status == OrderStatus::STATUS_CREATED) {
+            $request->markAuthorized();
+            return;
+        }
+
         switch ($status) {
             case OrderStatus::STATUS_PENDING:
                 $request->markPending();
@@ -56,10 +65,8 @@ class StatusAction extends BaseApiAwareAction
             case OrderStatus::STATUS_AUTHORIZED:
                 $request->markAuthorized();
                 break;
-            case OrderStatus::STATUS_CANCELED:
-                $request->markCanceled();
-                break;
             case OrderStatus::STATUS_EXPIRED:
+            case OrderStatus::STATUS_CANCELED:
                 $request->markCanceled();
                 break;
             case OrderStatus::STATUS_CREATED:
