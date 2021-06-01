@@ -34,17 +34,14 @@ class ConvertPaymentAction implements ActionInterface
 
         /** @var PaymentInterface $payment */
         $payment = $request->getSource();
-
-        $details = ArrayObject::ensureArrayObject($payment->getDetails());
-
-        unset($details['description']);
+        $details = $payment->getDetails();
 
         $details['amount'] = [
             'value' => sprintf("%01.2f", ($payment->getTotalAmount() / $this->decimalFactor)),
             'currency' => $payment->getCurrencyCode()
         ];
 
-        $request->setResult((array)$details);
+        $request->setResult($details);
     }
 
     /**
