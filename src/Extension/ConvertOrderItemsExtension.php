@@ -48,7 +48,13 @@ class ConvertOrderItemsExtension extends AbstractConvertOrderExtension
 
         if ($order->hasPriceRules()) {
             foreach ($order->getPriceRuleItems()->getItems() as $priceRuleItem) {
-                $lineItems[] = $this->transformPriceRuleItemToLineItem($priceRuleItem, $payment->getCurrencyCode(), $order->getLocaleCode());
+                $result = $this->transformPriceRuleItemToLineItem($priceRuleItem, $payment->getCurrencyCode(), $order->getLocaleCode());
+
+                if ($result === false) {
+                    continue;
+                }
+
+                $lineItems[] = $result;
             }
         }
 
@@ -118,6 +124,10 @@ class ConvertOrderItemsExtension extends AbstractConvertOrderExtension
     {
         $discountGross = $priceRuleItem->getDiscount(true);
         $discountNet = $priceRuleItem->getDiscount(false);
+
+        if ($discountNet == 0) {
+            return false;
+        }
 
         $vatAmount = $discountGross - $discountNet;
         $vatRate = round(($vatAmount / $discountNet) * 100);
