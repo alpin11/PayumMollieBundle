@@ -14,8 +14,6 @@ services:
 
     coreshop.payum.mollie.action.convert_payment: '@CoreShop\Payum\MollieBundle\Action\ConvertPaymentAction'
     CoreShop\Payum\MollieBundle\Action\ConvertPaymentAction:
-        arguments:
-            - '%coreshop.currency.decimal_factor%'
         tags:
             - { name: payum.action, factory: mollie, alias: payum.action.convert_payment }
 
