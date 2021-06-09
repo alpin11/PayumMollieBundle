@@ -14,16 +14,6 @@ class ConvertPaymentAction implements ActionInterface
     use GatewayAwareTrait;
 
     /**
-     * @var int
-     */
-    private $decimalFactor;
-
-    public function __construct($decimalFactor)
-    {
-        $this->decimalFactor = $decimalFactor;
-    }
-
-    /**
      * {@inheritDoc}
      *
      * @param Convert $request
@@ -37,7 +27,7 @@ class ConvertPaymentAction implements ActionInterface
         $details = $payment->getDetails();
 
         $details['amount'] = [
-            'value' => sprintf("%01.2f", ($payment->getTotalAmount() / $this->decimalFactor)),
+            'value' => sprintf("%01.2f", ($payment->getTotalAmount() / 100)),
             'currency' => $payment->getCurrencyCode()
         ];
 
