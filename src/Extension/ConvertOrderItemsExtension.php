@@ -13,6 +13,7 @@ use CoreShop\Component\Payment\Model\PaymentInterface;
 use CoreShop\Component\Pimcore\Templating\Helper\LinkGeneratorHelperInterface;
 use CoreShop\Component\Product\Model\ProductInterface;
 use CoreShop\Component\Taxation\Model\TaxItemInterface;
+use Doctrine\ORM\Mapping as ORM;
 use Mollie\Api\Types\OrderLineType;
 use Pimcore\Model\Asset;
 use Pimcore\Model\DataObject\Fieldcollection;
@@ -20,19 +21,17 @@ use Pimcore\Tool;
 
 class ConvertOrderItemsExtension extends AbstractConvertOrderExtension
 {
-    /**
-     * @var int|float
-     */
-    protected $decimalFactor;
-    /**
-     * @var LinkGeneratorHelperInterface
-     */
-    protected $linkGeneratorHelper;
+    protected int $decimalFactor;
 
-    public function __construct(LinkGeneratorHelperInterface $linkGeneratorHelper, $decimalFactor)
+    protected LinkGeneratorHelperInterface $linkGeneratorHelper;
+
+    private int $decimalPrecision;
+
+    public function __construct(LinkGeneratorHelperInterface $linkGeneratorHelper, int $decimalFactor, int $decimalPrecision)
     {
         $this->decimalFactor = $decimalFactor;
         $this->linkGeneratorHelper = $linkGeneratorHelper;
+        $this->decimalPrecision = $decimalPrecision;
     }
 
     /**
@@ -252,10 +251,12 @@ class ConvertOrderItemsExtension extends AbstractConvertOrderExtension
      *
      * @return string[]
      */
-    protected function transformMoneyWithCurrency(int $amount, string $currencyCode)
+    protected function transformMoneyWithCurrency(int $amount, string $currencyCode): array
     {
+        $value = (int)round((round($amount / $this->decimalFactor, $this->decimalPrecision) * 100), 0);
+
         return [
-            'value' => sprintf("%01.2f", ($amount / $this->decimalFactor)),
+            'value' => sprintf("%01.2f", $value),
             'currency' => $currencyCode
         ];
     }

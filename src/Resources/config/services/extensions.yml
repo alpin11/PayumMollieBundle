@@ -12,6 +12,7 @@ services:
         arguments:
             - '@CoreShop\Component\Pimcore\Templating\Helper\LinkGeneratorHelper'
             - '%coreshop.currency.decimal_factor%'
+            - '%coreshop.currency.decimal_precision%'
         tags:
             - { name: payum.extension, alias: mollie_order_items_extension, factory: mollie, gateway: mollie, prepend: false }
 
