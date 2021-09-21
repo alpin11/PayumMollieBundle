@@ -256,7 +256,7 @@ class ConvertOrderItemsExtension extends AbstractConvertOrderExtension
         $value = (int)round((round($amount / $this->decimalFactor, $this->decimalPrecision) * 100), 0);
 
         return [
-            'value' => sprintf("%01.2f", $value),
+            'value' => sprintf("%01.2f", ($value / 100)),
             'currency' => $currencyCode
         ];
     }
