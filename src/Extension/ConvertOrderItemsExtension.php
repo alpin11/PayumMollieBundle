@@ -210,28 +210,6 @@ class ConvertOrderItemsExtension extends AbstractConvertOrderExtension
         if ($product instanceof ProductInterface) {
             $lineItem['sku'] = $product->getSku();
 
-            $image = $product->getImage();
-
-            if ($image instanceof Asset\Image) {
-                $imageUrl = $image->getThumbnail([
-                    'width' => 150,
-                    'aspectratio' => true,
-                    'format' => 'png',
-                    'quality' => 80
-                ])->getPath();
-
-                // if not valid url we only have the path to the thumbnail
-                // so we need to prepend the host url
-                if (!filter_var($imageUrl, FILTER_VALIDATE_URL)) {
-                    $imageUrl = Tool::getHostUrl() . $imageUrl;
-                }
-
-                // only set imageUrl if its valid
-                if (filter_var($imageUrl, FILTER_VALIDATE_URL)) {
-                    $lineItem['imageUrl'] = $imageUrl;
-                };
-            }
-
             $lineItem['productUrl'] = Tool::getHostUrl() . $this->linkGeneratorHelper->getPath($product, null, [
                     '_locale' => $locale
                 ]);
