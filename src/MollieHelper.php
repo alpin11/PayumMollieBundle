@@ -28,6 +28,10 @@ class MollieHelper
 
 
             foreach ($linesInDetails as $mollieLine) {
+                if (is_object($mollieLine)) {
+                    $mollieLine = (array)$mollieLine;
+                }
+
                 if (!isset($mollieLine['metadata'])) {
                     continue;
                 }
