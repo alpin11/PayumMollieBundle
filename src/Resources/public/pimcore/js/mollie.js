@@ -1,8 +1,7 @@
 pimcore.registerNS('coreshop.provider.gateways.mollie');
 coreshop.provider.gateways.mollie = Class.create(coreshop.provider.gateways.abstract, {
     getLayout: function (config) {
-
-        var methods = Ext.create('Ext.data.Store', {
+        const methods = Ext.create('Ext.data.Store', {
             fields: ['key', 'name'],
             data: [
                 {"key": "applepay", "name": "Apple Pay"},
@@ -27,7 +26,7 @@ coreshop.provider.gateways.mollie = Class.create(coreshop.provider.gateways.abst
             ]
         });
 
-        var methodCombo = Ext.create('Ext.form.ComboBox', {
+        const methodCombo = Ext.create('Ext.form.ComboBox', {
             fieldLabel: t('mollie_method'),
             store: methods,
             queryMode: 'local',
@@ -44,7 +43,7 @@ coreshop.provider.gateways.mollie = Class.create(coreshop.provider.gateways.abst
                 fieldLabel: t('mollie_api_key'),
                 name: 'gatewayConfig.config.apiKey',
                 length: 255,
-                value: config.apiKey ? config.apiKey : ""
+                value: config ? config.apiKey : ""
             },
             methodCombo
         ];
