@@ -3,41 +3,31 @@
 
 namespace CoreShop\Payum\MollieBundle\Extension;
 
+use CoreShop\Component\Core\Model\OrderItemInterface as CoreOrderItemInterface;
 use CoreShop\Component\Order\Model\AdjustmentInterface;
 use CoreShop\Component\Order\Model\CartPriceRuleInterface;
 use CoreShop\Component\Order\Model\OrderInterface;
 use CoreShop\Component\Order\Model\OrderItemInterface;
-use CoreShop\Component\Core\Model\OrderItemInterface as CoreOrderItemInterface;
 use CoreShop\Component\Order\Model\ProposalCartPriceRuleItemInterface;
 use CoreShop\Component\Payment\Model\PaymentInterface;
-use CoreShop\Component\Pimcore\Templating\Helper\LinkGeneratorHelperInterface;
 use CoreShop\Component\Product\Model\ProductInterface;
-use CoreShop\Component\Taxation\Model\TaxItemInterface;
-use Doctrine\ORM\Mapping as ORM;
 use Mollie\Api\Types\OrderLineType;
-use Pimcore\Model\Asset;
-use Pimcore\Model\DataObject\Fieldcollection;
+use Pimcore\Model\DataObject\ClassDefinition\LinkGeneratorInterface;
 use Pimcore\Tool;
 
 class ConvertOrderItemsExtension extends AbstractConvertOrderExtension
 {
-    protected int $decimalFactor;
 
-    protected LinkGeneratorHelperInterface $linkGeneratorHelper;
 
-    private int $decimalPrecision;
-
-    public function __construct(LinkGeneratorHelperInterface $linkGeneratorHelper, int $decimalFactor, int $decimalPrecision)
+    public function __construct(protected int $decimalFactor, protected int $decimalPrecision)
     {
-        $this->decimalFactor = $decimalFactor;
-        $this->linkGeneratorHelper = $linkGeneratorHelper;
-        $this->decimalPrecision = $decimalPrecision;
+
     }
 
     /**
      * @inheritDoc
      */
-    protected function doPostExecute(PaymentInterface $payment, OrderInterface $order, $result = [])
+    protected function doPostExecute(PaymentInterface $payment, OrderInterface $order, array $result = []): array
     {
         $lineItems = [];
 
@@ -64,7 +54,7 @@ class ConvertOrderItemsExtension extends AbstractConvertOrderExtension
         }
 
         foreach ($order->getAdjustments() as $adjustment) {
-            if ($adjustment->getNeutral() == true) {
+            if ($adjustment->getNeutral()) {
                 continue;
             }
 
@@ -87,7 +77,7 @@ class ConvertOrderItemsExtension extends AbstractConvertOrderExtension
      *
      * @return array
      */
-    protected function transformAdjustmentToLineItem(AdjustmentInterface $adjustment, $currencyCode)
+    protected function transformAdjustmentToLineItem(AdjustmentInterface $adjustment, $currencyCode): array
     {
         $amountGross = $adjustment->getAmount(true);
         $amountNet = $adjustment->getAmount(false);
@@ -95,7 +85,7 @@ class ConvertOrderItemsExtension extends AbstractConvertOrderExtension
         $vatAmount = $amountGross - $amountNet;
         $vatRate = round(($vatAmount / $amountNet) * 100);
 
-        // TODO: needed to prevent rounding errors of mollie
+        // needed to prevent rounding errors of Mollie
         $vatAmount = round($amountGross * ($vatRate / (100 + $vatRate)));
 
         return [
@@ -112,16 +102,9 @@ class ConvertOrderItemsExtension extends AbstractConvertOrderExtension
         ];
     }
 
-    /**
-     * @param ProposalCartPriceRuleItemInterface $priceRuleItem
-     * @param $currencyCode
-     * @param $localeCode
-     *
-     * @return array
-     */
-    protected function transformPriceRuleItemToLineItem(ProposalCartPriceRuleItemInterface $priceRuleItem, $currencyCode, $localeCode)
+    protected function transformPriceRuleItemToLineItem(ProposalCartPriceRuleItemInterface $priceRuleItem, string $currencyCode, string $localeCode): bool|array
     {
-        $discountGross = $priceRuleItem->getDiscount(true);
+        $discountGross = $priceRuleItem->getDiscount();
         $discountNet = $priceRuleItem->getDiscount(false);
 
         if ($discountNet == 0) {
@@ -148,14 +131,7 @@ class ConvertOrderItemsExtension extends AbstractConvertOrderExtension
     }
 
 
-    /**
-     * @param OrderInterface $order
-     * @param $currencyCode
-     * @param $localeCode
-     *
-     * @return array
-     */
-    protected function transformShippingToLineItem(OrderInterface $order, $currencyCode)
+    protected function transformShippingToLineItem(OrderInterface $order, string $currencyCode): array
     {
         $shippingGross = $order->getShipping(true);
         $vatAmount = $order->getShippingTax();
@@ -184,7 +160,7 @@ class ConvertOrderItemsExtension extends AbstractConvertOrderExtension
      *
      * @return array
      */
-    protected function transformOrderItemToLineItem(OrderItemInterface $orderItem, $currencyCode, $locale = null)
+    protected function transformOrderItemToLineItem(OrderItemInterface $orderItem, string $currencyCode, string $locale = null): array
     {
         $product = $orderItem->getProduct();
         $itemTotal = $orderItem->getTotal(true);
@@ -210,9 +186,13 @@ class ConvertOrderItemsExtension extends AbstractConvertOrderExtension
         if ($product instanceof ProductInterface) {
             $lineItem['sku'] = $product->getSku();
 
-            $lineItem['productUrl'] = Tool::getHostUrl() . $this->linkGeneratorHelper->getPath($product, null, [
-                    '_locale' => $locale
-                ]);
+            $linkGenerator = $orderItem->getClass()->getLinkGenerator();
+
+            if ($linkGenerator instanceof LinkGeneratorInterface) {
+                $lineItem['productUrl'] = Tool::getHostUrl() . $linkGenerator->generate($orderItem, [
+                        '_locale' => $locale
+                    ]);
+            }
         }
 
         $lineItem['metadata'] = json_encode([

@@ -7,20 +7,15 @@ namespace CoreShop\Payum\MollieBundle\EventListener;
 use CoreShop\Component\Core\Model\OrderInterface;
 use CoreShop\Component\Core\Model\OrderItemInterface;
 use CoreShop\Component\Order\Model\OrderDocumentItemInterface;
-use CoreShop\Component\Order\Model\OrderPaymentInterface;
 use CoreShop\Component\Payment\Model\PaymentInterface;
 use CoreShop\Component\Payment\Repository\PaymentRepositoryInterface;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
-abstract class AbstractPaymentAwareListener
+abstract class AbstractPaymentAwareListener implements EventSubscriberInterface
 {
-    /**
-     * @var PaymentRepositoryInterface
-     */
-    protected $paymentRepository;
-
-    public function __construct(PaymentRepositoryInterface $paymentRepository)
+    public function __construct(protected PaymentRepositoryInterface $paymentRepository)
     {
-        $this->paymentRepository = $paymentRepository;
+
     }
 
     /**
@@ -28,10 +23,10 @@ abstract class AbstractPaymentAwareListener
      *
      * @return PaymentInterface|null
      */
-    protected function findFirstValidPayment(OrderInterface $order)
+    protected function findFirstValidPayment(OrderInterface $order): ?PaymentInterface
     {
         foreach ($this->paymentRepository->findForPayable($order) as $payment) {
-            if (in_array($payment->getState(), [OrderPaymentInterface::STATE_AUTHORIZED, OrderPaymentInterface::STATE_COMPLETED], true)) {
+            if (in_array($payment->getState(), [PaymentInterface::STATE_AUTHORIZED, PaymentInterface::STATE_COMPLETED], true)) {
                 return $payment;
             }
         }
@@ -44,7 +39,7 @@ abstract class AbstractPaymentAwareListener
      *
      * @return int|null
      */
-    protected function resolverOrderItemId(OrderDocumentItemInterface $orderDocumentItem)
+    protected function resolverOrderItemId(OrderDocumentItemInterface $orderDocumentItem): ?int
     {
         return $orderDocumentItem->getOrderItem() instanceof OrderItemInterface ? $orderDocumentItem->getOrderItem()->getId() : null;
     }

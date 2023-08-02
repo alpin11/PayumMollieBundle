@@ -5,50 +5,36 @@ namespace CoreShop\Payum\MollieBundle\EventListener;
 
 
 use CoreShop\Bundle\PayumBundle\Factory\GetStatusFactoryInterface;
-use CoreShop\Bundle\PayumBundle\Model\GatewayConfig;
 use CoreShop\Component\Core\Model\OrderInterface;
 use CoreShop\Component\Core\Model\PaymentProviderInterface;
 use CoreShop\Component\Payment\Model\PaymentInterface;
 use CoreShop\Component\Payment\Repository\PaymentRepositoryInterface;
 use CoreShop\Payum\MollieBundle\Factory\ShipAllFactoryInterface;
-use Payum\Core\Registry\RegistryInterface;
+use Payum\Core\Model\GatewayConfigInterface;
+use Payum\Core\Payum;
 use Pimcore\Logger;
 use Symfony\Component\Workflow\Event\Event;
 
 class OrderListener extends AbstractPaymentAwareListener
 {
-
-    /**
-     * @var ShipAllFactoryInterface
-     */
-    private $shipAllFactory;
-    /**
-     * @var RegistryInterface
-     */
-    private $payum;
-    /**
-     * @var GetStatusFactoryInterface
-     */
-    private $getStatusFactory;
-
     public function __construct(
-        PaymentRepositoryInterface $paymentRepository,
-        ShipAllFactoryInterface $shipAllFactory,
-        RegistryInterface $payum,
-        GetStatusFactoryInterface $getStatusFactory
+        PaymentRepositoryInterface          $paymentRepository,
+        protected ShipAllFactoryInterface   $shipAllFactory,
+        protected Payum                     $payum,
+        protected GetStatusFactoryInterface $getStatusFactory
     )
     {
-        $this->shipAllFactory = $shipAllFactory;
-        $this->payum = $payum;
-        $this->getStatusFactory = $getStatusFactory;
-
         parent::__construct($paymentRepository);
     }
 
-    /**
-     * @param Event $event
-     */
-    public function onShipped(Event $event)
+    public static function getSubscribedEvents(): array
+    {
+        return [
+            'workflow.coreshop_order_shipment.enter.shipped' => 'onShipped'
+        ];
+    }
+
+    public function onShipped(Event $event): void
     {
         $object = $event->getSubject();
 
@@ -70,12 +56,12 @@ class OrderListener extends AbstractPaymentAwareListener
         $paymentProvider = $payment->getPaymentProvider();
 
         if (!$paymentProvider instanceof PaymentProviderInterface) {
-            Logger::log('Not able to determine the gateway without payment provider');
+            Logger::warn('Not able to determine the gateway without payment provider');
 
             return;
         }
 
-        if (!$paymentProvider->getGatewayConfig() instanceof GatewayConfig) {
+        if (!$paymentProvider->getGatewayConfig() instanceof GatewayConfigInterface) {
             return;
         }
 
@@ -91,4 +77,6 @@ class OrderListener extends AbstractPaymentAwareListener
         $getStatusRequest = $this->getStatusFactory->createNewWithModel($payment);
         $this->payum->getGateway($paymentProvider->getGatewayConfig()->getGatewayName())->execute($getStatusRequest);
     }
+
+
 }

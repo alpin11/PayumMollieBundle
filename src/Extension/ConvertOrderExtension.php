@@ -12,20 +12,15 @@ use CoreShop\Payum\MollieBundle\Model\MollieCustomerInterface;
 
 class ConvertOrderExtension extends AbstractConvertOrderExtension
 {
-    /**
-     * @var int|float
-     */
-    private $decimalFactor;
-
-    public function __construct($decimalFactor)
+    public function __construct(protected int|float $decimalFactor)
     {
-        $this->decimalFactor = $decimalFactor;
+
     }
 
     /**
      * @inheritDoc
      */
-    protected function doPostExecute(PaymentInterface $payment, OrderInterface $order, $result = [])
+    protected function doPostExecute(PaymentInterface $payment, OrderInterface $order, array $result = []): array
     {
         $customer = $order->getCustomer();
 
@@ -64,7 +59,7 @@ class ConvertOrderExtension extends AbstractConvertOrderExtension
      * @param string $locale
      * @return string
      */
-    private function isLocaleValid(string $locale) : string
+    private function isLocaleValid(string $locale): string
     {
         $validLocales = [
             'en_US',
@@ -98,7 +93,7 @@ class ConvertOrderExtension extends AbstractConvertOrderExtension
      *
      * @return string
      */
-    private function getLocaleCode(OrderInterface $order)
+    private function getLocaleCode(OrderInterface $order): string
     {
         if (strpos($order->getLocaleCode(), '_') > -1) {
             return $order->getLocaleCode();

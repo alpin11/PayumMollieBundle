@@ -17,20 +17,15 @@ use function GuzzleHttp\Promise\inspect;
 
 final class ConvertOrderAddressesExtension extends AbstractConvertOrderExtension
 {
-    /**
-     * @var PhoneNumberUtil
-     */
-    private $phoneNumberUtil;
-
-    public function __construct(PhoneNumberUtil $phoneNumberUtil)
+    public function __construct(protected PhoneNumberUtil $phoneNumberUtil)
     {
-        $this->phoneNumberUtil = $phoneNumberUtil;
+
     }
 
     /**
      * @inheritDoc
      */
-    protected function doPostExecute(PaymentInterface $payment, OrderInterface $order, $result = [])
+    protected function doPostExecute(PaymentInterface $payment, OrderInterface $order, array $result = []): array
     {
         $customer = $order->getCustomer();
         $shippingAddress = $order->getShippingAddress();

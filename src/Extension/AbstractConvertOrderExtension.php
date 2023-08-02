@@ -22,7 +22,7 @@ abstract class AbstractConvertOrderExtension implements ExtensionInterface
         // nothing to do here
     }
 
-    public function onPostExecute(Context $context)
+    public function onPostExecute(Context $context): void
     {
         $action = $context->getAction();
         $previousActionClassName = get_class($action);
@@ -65,5 +65,5 @@ abstract class AbstractConvertOrderExtension implements ExtensionInterface
      *
      * @return array
      */
-    abstract protected function doPostExecute(PaymentInterface $payment, OrderInterface $order, $result = []);
+    abstract protected function doPostExecute(PaymentInterface $payment, OrderInterface $order, array $result = []): array;
 }
