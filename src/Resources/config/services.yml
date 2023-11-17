@@ -1,6 +1,6 @@
 imports:
     - { resource: services/actions.yml }
-    - { resource: services/extensions.yml }
+    - { resource: services/provider.yml }
     - { resource: services/requests.yml }
 
 services:

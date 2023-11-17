@@ -4,52 +4,43 @@
 namespace CoreShop\Payum\MollieBundle\EventListener;
 
 use CoreShop\Bundle\PayumBundle\Factory\GetStatusFactoryInterface;
-use CoreShop\Bundle\PayumBundle\Model\GatewayConfig;
 use CoreShop\Component\Core\Model\CarrierInterface;
 use CoreShop\Component\Core\Model\OrderInterface;
-use CoreShop\Component\Core\Model\OrderItemInterface;
 use CoreShop\Component\Core\Model\OrderShipmentInterface;
 use CoreShop\Component\Core\Model\PaymentProviderInterface;
 use CoreShop\Component\Payment\Model\PaymentInterface;
 use CoreShop\Component\Payment\Repository\PaymentRepositoryInterface;
 use CoreShop\Payum\MollieBundle\Factory\CreateShipmentFactoryInterface;
-use Payum\Core\Registry\RegistryInterface;
+use Payum\Core\Model\GatewayConfigInterface;
+use Payum\Core\Payum;
 use Pimcore\Logger;
 use Symfony\Component\Workflow\Event\Event;
 
 class OrderShipmentListener extends AbstractPaymentAwareListener
 {
-    /**
-     * @var CreateShipmentFactoryInterface
-     */
-    protected $createShipmentFactory;
-    /**
-     * @var RegistryInterface
-     */
-    protected $payum;
-    /**
-     * @var GetStatusFactoryInterface
-     */
-    protected $getStatusFactory;
+
 
     public function __construct(
-        PaymentRepositoryInterface $paymentRepository,
-        CreateShipmentFactoryInterface $createShipmentFactory,
-        RegistryInterface $payum,
-        GetStatusFactoryInterface $getStatusFactory
+        PaymentRepositoryInterface               $paymentRepository,
+        protected CreateShipmentFactoryInterface $createShipmentFactory,
+        protected Payum                          $payum,
+        protected GetStatusFactoryInterface      $getStatusFactory
     )
     {
-        $this->createShipmentFactory = $createShipmentFactory;
-        $this->payum = $payum;
-        $this->getStatusFactory = $getStatusFactory;
-
         parent::__construct($paymentRepository);
+    }
+
+    public static function getSubscribedEvents(): array
+    {
+        return [
+            'workflow.coreshop_shipment.enter.shipped' => 'onEnterShipped'
+        ];
     }
 
     /**
      * @param Event $event
      */
-    public function onEnterShipped(Event $event)
+    public function onEnterShipped(Event $event): void
     {
         $object = $event->getSubject();
 
@@ -115,7 +106,7 @@ class OrderShipmentListener extends AbstractPaymentAwareListener
             return;
         }
 
-        if (!$paymentProvider->getGatewayConfig() instanceof GatewayConfig) {
+        if (!$paymentProvider->getGatewayConfig() instanceof GatewayConfigInterface) {
             return;
         }
 

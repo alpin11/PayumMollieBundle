@@ -13,7 +13,7 @@ class Configuration implements ConfigurationInterface
     /**
      * @inheritDoc
      */
-    public function getConfigTreeBuilder()
+    public function getConfigTreeBuilder(): TreeBuilder
     {
         $treeBuilder = new TreeBuilder('coreshop_mollie');
         $root = method_exists($treeBuilder, 'getRootNode') ? $treeBuilder->getRootNode() : $treeBuilder->root('coreshop_mollie');
@@ -27,13 +27,13 @@ class Configuration implements ConfigurationInterface
                         ->arrayNode('coreshop_payment')
                             ->addDefaultsIfNotSet()
                             ->children()
-                                ->booleanNode('enabled')->defaultFalse()->cannotBeEmpty()->end()
+                                ->booleanNode('enabled')->defaultFalse()->end()
                             ->end()
                         ->end()
                         ->arrayNode('coreshop_refund_bundle')
                             ->addDefaultsIfNotSet()
                             ->children()
-                                ->booleanNode('enabled')->defaultFalse()->cannotBeEmpty()->end()
+                                ->booleanNode('enabled')->defaultFalse()->end()
                             ->end()
                         ->end()
                     ->end()

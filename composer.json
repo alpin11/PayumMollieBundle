@@ -12,17 +12,16 @@
   "authors": [
     {
       "name": "David Höck",
-      "email": "d.hoeck@alpin11.at",
+      "email": "d.hoeck@alpin11.com",
       "role": "Developer",
-      "homepage": "https://alpin11.at"
+      "homepage": "https://alpin11.com"
     }
   ],
   "require": {
-    "php": "^7.0",
-    "pimcore/pimcore": "^6.8",
-    "coreshop/payum-bundle": "^2.2",
+    "pimcore/pimcore": "^10.5 || ^11.0",
+    "coreshop/payum-bundle": "^3.0 || ^4.0-dev",
     "mollie/mollie-api-php": "^2.16",
-    "misd/phone-number-bundle": "^1.3"
+    "odolbeau/phone-number-bundle": "^3.9"
   },
   "autoload": {
     "psr-4": {

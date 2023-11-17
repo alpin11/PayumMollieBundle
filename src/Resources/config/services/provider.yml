@@ -1,0 +1,42 @@
+services:
+
+    CoreShop\Payum\MollieBundle\Provider\AbstractProvider:
+        abstract: true
+        arguments:
+            $decimalFactor: '%coreshop.currency.decimal_factor%'
+            $decimalPrecision: '%coreshop.currency.decimal_precision%'
+
+    CoreShop\Payum\MollieBundle\Provider\DetailProvider:
+        arguments:
+            - '@CoreShop\Payum\MollieBundle\Provider\LocaleProvider'
+            - '@CoreShop\Payum\MollieBundle\Provider\ShippingAddressProvider'
+            - '@CoreShop\Payum\MollieBundle\Provider\BillingAddressProvider'
+            - '@CoreShop\Payum\MollieBundle\Provider\OrderItemsProvider'
+            - '@CoreShop\Payum\MollieBundle\Provider\AdjustmentsProvider'
+            - '@CoreShop\Payum\MollieBundle\Provider\ShippingCostProvider'
+            - '@CoreShop\Payum\MollieBundle\Provider\PriceRulesProvider'
+            - '@CoreShop\Payum\MollieBundle\Provider\AmountProvider'
+
+    CoreShop\Payum\MollieBundle\Provider\AmountProvider:
+        parent: CoreShop\Payum\MollieBundle\Provider\AbstractProvider
+
+    CoreShop\Payum\MollieBundle\Provider\AdjustmentsProvider:
+        parent: CoreShop\Payum\MollieBundle\Provider\AbstractProvider
+
+    CoreShop\Payum\MollieBundle\Provider\BillingAddressProvider:
+        parent: CoreShop\Payum\MollieBundle\Provider\AbstractProvider
+
+    CoreShop\Payum\MollieBundle\Provider\LocaleProvider:
+        parent: CoreShop\Payum\MollieBundle\Provider\AbstractProvider
+
+    CoreShop\Payum\MollieBundle\Provider\OrderItemsProvider:
+        parent: CoreShop\Payum\MollieBundle\Provider\AbstractProvider
+
+    CoreShop\Payum\MollieBundle\Provider\PriceRulesProvider:
+        parent: CoreShop\Payum\MollieBundle\Provider\AbstractProvider
+
+    CoreShop\Payum\MollieBundle\Provider\ShippingAddressProvider:
+        parent: CoreShop\Payum\MollieBundle\Provider\AbstractProvider
+
+    CoreShop\Payum\MollieBundle\Provider\ShippingCostProvider:
+        parent: CoreShop\Payum\MollieBundle\Provider\AbstractProvider

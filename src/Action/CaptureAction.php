@@ -6,8 +6,8 @@ use CoreShop\Payum\MollieBundle\Action\Api\BaseApiAwareAction;
 use CoreShop\Payum\MollieBundle\MollieDetails;
 use Mollie\Api\Exceptions\ApiException;
 use Mollie\Api\MollieApiClient;
-use Payum\Core\Bridge\Spl\ArrayObject;
 use Payum\Core\Exception\RequestNotSupportedException;
+use Payum\Core\Bridge\Spl\ArrayObject;
 use Payum\Core\Reply\HttpRedirect;
 use Payum\Core\Request\Capture;
 use Payum\Core\Security\GenericTokenFactoryAwareInterface;
@@ -16,6 +16,7 @@ use Payum\Core\Security\GenericTokenFactoryAwareTrait;
 class CaptureAction extends BaseApiAwareAction implements GenericTokenFactoryAwareInterface
 {
     use GenericTokenFactoryAwareTrait;
+
 
     /**
      * @param Capture $request
@@ -62,7 +63,7 @@ class CaptureAction extends BaseApiAwareAction implements GenericTokenFactoryAwa
     /**
      * {@inheritDoc}
      */
-    public function supports($request)
+    public function supports($request): bool
     {
         return
             $request instanceof Capture &&

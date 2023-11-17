@@ -11,16 +11,12 @@ use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 class MollieExtension extends Extension
 {
     /**
-     * @inheritDoc
+     * @throws \Exception
      */
-    public function load(array $configs, ContainerBuilder $container)
+    public function load(array $configs, ContainerBuilder $container): void
     {
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('services.yml');
-
-        if (array_key_exists('CoreShopRefundBundle', $container->getParameter('kernel.bundles'))) {
-            $loader->load('services/refund.yml');
-        }
 
         if (array_key_exists('CoreShopOrderBundle', $container->getParameter('kernel.bundles'))) {
             $loader->load('services/order.yml');

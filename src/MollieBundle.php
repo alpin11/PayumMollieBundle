@@ -24,7 +24,7 @@ class MollieBundle extends AbstractPimcoreBundle implements DependentBundleInter
     /**
      * @inheritDoc
      */
-    public static function registerDependentBundles(BundleCollection $collection)
+    public static function registerDependentBundles(BundleCollection $collection): void
     {
         $collection->addBundle(new MisdPhoneNumberBundle());
     }

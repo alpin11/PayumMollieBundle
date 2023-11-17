@@ -14,6 +14,8 @@ services:
 
     coreshop.payum.mollie.action.convert_payment: '@CoreShop\Payum\MollieBundle\Action\ConvertPaymentAction'
     CoreShop\Payum\MollieBundle\Action\ConvertPaymentAction:
+        arguments:
+            - '@CoreShop\Payum\MollieBundle\Provider\DetailProvider'
         tags:
             - { name: payum.action, factory: mollie, alias: payum.action.convert_payment }
 
