@@ -2,16 +2,20 @@
 
 namespace CoreShop\Payum\MollieBundle\Action;
 
+use CoreShop\Component\Core\Model\PaymentInterface;
+use CoreShop\Payum\MollieBundle\Provider\DetailProvider;
 use Payum\Core\Action\ActionInterface;
-use Payum\Core\Bridge\Spl\ArrayObject;
 use Payum\Core\Exception\RequestNotSupportedException;
 use Payum\Core\GatewayAwareTrait;
-use Payum\Core\Model\PaymentInterface;
 use Payum\Core\Request\Convert;
 
 class ConvertPaymentAction implements ActionInterface
 {
     use GatewayAwareTrait;
+
+    public function __construct(protected DetailProvider $detailProvider)
+    {
+    }
 
     /**
      * {@inheritDoc}
@@ -22,26 +26,29 @@ class ConvertPaymentAction implements ActionInterface
     {
         RequestNotSupportedException::assertSupports($this, $request);
 
-        /** @var PaymentInterface $payment */
+        /** @var \CoreShop\Component\Core\Model\PaymentInterface $payment */
         $payment = $request->getSource();
         $details = $payment->getDetails();
+        $order = $payment->getOrder();
 
-        $details['amount'] = [
-            'value' => sprintf("%01.2f", ($payment->getTotalAmount() / 100)),
-            'currency' => $payment->getCurrencyCode()
+        $details = [
+            ...$details,
+            ...$this->detailProvider->getDetails($order, $payment)
         ];
 
         $request->setResult($details);
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
-    public function supports($request)
+    public function supports($request): bool
     {
         return
             $request instanceof Convert &&
             $request->getSource() instanceof PaymentInterface &&
-            $request->getTo() == 'array';
+            $request->getTo() === 'array'
+            ;
     }
+
 }
