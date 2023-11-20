@@ -26,7 +26,7 @@ abstract class AbstractAddressProvider extends AbstractProvider
             'givenName' => $address->getFirstname(),
             'familyName' => $address->getLastname(),
             'email' => $customer->getEmail(),
-            'phone' => $address->getPhoneNumber(),
+            // 'phone' => $address->getPhoneNumber() -> removed for now because of validation,
             'streetAndNumber' => $address->getStreet() . ' ' . $address->getNumber(),
             'postalCode' => $address->getPostcode(),
             'city' => $address->getCity(),
